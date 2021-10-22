@@ -10,6 +10,7 @@ namespace LT.DigitalOffice.PositionService.Data.Provider
   public interface IDataProvider : IBaseDataProvider
   {
     DbSet<DbPosition> Positions { get; set; }
+
     DbSet<DbPositionUser> PositionsUsers { get; set; }
   }
 }
