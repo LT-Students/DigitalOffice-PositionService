@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Validators;
 using LT.DigitalOffice.Kernel.Validators;
+using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position;
 using LT.DigitalOffice.PositionService.Validation.Position.Interfaces;
 using Microsoft.AspNetCore.JsonPatch.Operations;
@@ -10,7 +12,9 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
 {
   public class EditPositionRequestValidator : BaseEditRequestValidator<EditPositionRequest>, IEditPositionRequestValidator
   {
-    private void HandleInternalPropertyValidation(Operation<EditPositionRequest> requestedOperation, CustomContext context)
+    private readonly IPositionRepository _positionRepository;
+
+    private async Task HandleInternalPropertyValidationAsync(Operation<EditPositionRequest> requestedOperation, CustomContext context)
     {
       RequestedOperation = requestedOperation;
       Context = context;
@@ -43,6 +47,14 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         },
         CascadeMode.Stop);
 
+      await AddFailureForPropertyIfAsync(
+        nameof(EditPositionRequest.Name),
+        x => x == OperationType.Replace,
+        new()
+        {
+          { async x => await _positionRepository.DoesNameExistAsync(x.value?.ToString()), "The position name already exists" }
+        });
+
       #endregion
 
       #region Description
@@ -72,10 +84,12 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
       #endregion
     }
 
-    public EditPositionRequestValidator()
+    public EditPositionRequestValidator(IPositionRepository positionRepository)
     {
+      _positionRepository = positionRepository;
+
       RuleForEach(x => x.Operations)
-        .Custom(HandleInternalPropertyValidation);
+        .CustomAsync(async (operation, context, _) => await HandleInternalPropertyValidationAsync(operation, context));
     }
   }
 }

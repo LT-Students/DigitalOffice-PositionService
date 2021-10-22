@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Enums;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
@@ -49,16 +49,12 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
         return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden);
       }
 
-      if (!_validator.ValidateCustom(request, out List<string> errors))
-      {
-        return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.BadRequest, errors);
-      }
+      ValidationResult validationResult = await _validator.ValidateAsync(request);
 
-      if (await _repository.DoesNameExistAsync(request.Name))
+      if (!validationResult.IsValid)
       {
-        errors.Add("Position name should be unique.");
-
-        return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Conflict, errors);
+        return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.BadRequest,
+          validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
 
       _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;

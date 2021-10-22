@@ -71,14 +71,6 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 
           return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Conflict, errors);
         }
-
-        if (item.path.EndsWith(nameof(EditPositionRequest.Name), StringComparison.OrdinalIgnoreCase) &&
-          await _repository.DoesNameExistAsync(item.value.ToString()))
-        {
-          errors.Add("The position name already exists");
-
-          return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Conflict, errors);
-        }
       }
 
       bool result = await _repository.EditAsync(position, _mapper.Map(request));
