@@ -11,6 +11,7 @@ namespace LT.DigitalOffice.PositionService.Models.Db
     public Guid Id { get; set; }
     public Guid PositionId { get; set; }
     public Guid UserId { get; set; }
+    public double Rate { get; set; }
     public bool IsActive { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime CreatedAtUtc { get; set; }

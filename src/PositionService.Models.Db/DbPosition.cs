@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LT.DigitalOffice.Models.Broker.Models.Position;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

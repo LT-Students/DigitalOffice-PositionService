@@ -40,6 +40,7 @@ namespace LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef.Migrations
           Id = table.Column<Guid>(nullable: false),
           PositionId = table.Column<Guid>(nullable: false),
           UserId = table.Column<Guid>(nullable: false),
+          Rate = table.Column<double>(nullable: false),
           IsActive = table.Column<bool>(nullable: false),
           CreatedBy = table.Column<Guid>(nullable: false),
           CreatedAtUtc = table.Column<DateTime>(nullable: false),
