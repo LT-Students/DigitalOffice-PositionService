@@ -70,7 +70,7 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<bool> ContainsUsersAsync(Guid positionId)
     {
-      return await _provider.PositionUsers
+      return await _provider.PositionsUsers
         .AnyAsync(pu => pu.PositionId == positionId && pu.IsActive);
     }
 

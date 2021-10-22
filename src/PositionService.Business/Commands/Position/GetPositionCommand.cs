@@ -16,16 +16,16 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
   {
     private readonly IPositionRepository _repository;
     private readonly IPositionInfoMapper _mapper;
-    private readonly IResponseCreater _responseCreater;
+    private readonly IResponseCreater _responseCreator;
 
     public GetPositionCommand(
       IPositionRepository repository,
       IPositionInfoMapper mapper,
-      IResponseCreater responseCreater)
+      IResponseCreater responseCreator)
     {
       _repository = repository;
       _mapper = mapper;
-      _responseCreater = responseCreater;
+      _responseCreator = responseCreator;
     }
 
     public async Task<OperationResultResponse<PositionInfo>> ExecuteAsync(Guid positionId)
@@ -34,7 +34,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 
       if (position == null)
       {
-        return _responseCreater.CreateFailureResponse<PositionInfo>(HttpStatusCode.NotFound);
+        return _responseCreator.CreateFailureResponse<PositionInfo>(HttpStatusCode.NotFound);
       }
 
       return new()

@@ -26,7 +26,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         });
 
       AddСorrectOperations(nameof(EditPositionRequest.Name), new() { OperationType.Replace });
-      AddСorrectOperations(nameof(EditPositionRequest.Description), new() { OperationType.Replace });
+      AddСorrectOperations(nameof(EditPositionRequest.Description), new() { OperationType.Replace, OperationType.Remove });
       AddСorrectOperations(nameof(EditPositionRequest.IsActive), new() { OperationType.Replace });
 
       #endregion
@@ -49,7 +49,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
 
       AddFailureForPropertyIf(
         nameof(EditPositionRequest.Description),
-        x => x == OperationType.Replace,
+        x => x == OperationType.Replace || x == OperationType.Remove,
         new()
         {
           { x => !string.IsNullOrEmpty(x.value?.ToString()), "Description should not be empty." },

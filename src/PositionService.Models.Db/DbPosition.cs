@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using LT.DigitalOffice.Models.Broker.Models.Position;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -36,6 +35,11 @@ namespace LT.DigitalOffice.PositionService.Models.Db
 
       builder
         .HasKey(p => p.Id);
+
+      builder
+        .Property(p => p.Name)
+        .IsRequired()
+        .HasMaxLength(80);
 
       builder
         .HasMany(p => p.Users)

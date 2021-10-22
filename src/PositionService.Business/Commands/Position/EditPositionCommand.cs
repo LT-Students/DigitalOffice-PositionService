@@ -24,32 +24,32 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     private readonly IPositionRepository _repository;
     private readonly IPatchDbPositionMapper _mapper;
     private readonly IAccessValidator _accessValidator;
-    private readonly IResponseCreater _responseCreater;
+    private readonly IResponseCreater _responseCreator;
 
     public EditPositionCommand(
       IEditPositionRequestValidator validator,
       IPositionRepository repository,
       IPatchDbPositionMapper mapper,
       IAccessValidator accessValidator,
-      IResponseCreater responseCreater)
+      IResponseCreater responseCreator)
     {
       _validator = validator;
       _repository = repository;
       _mapper = mapper;
       _accessValidator = accessValidator;
-      _responseCreater = responseCreater;
+      _responseCreator = responseCreator;
     }
 
     public async Task<OperationResultResponse<bool>> ExecuteAsync(Guid positionId, JsonPatchDocument<EditPositionRequest> request)
     {
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemovePositions))
       {
-        return _responseCreater.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
+        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
       }
 
       if (!_validator.ValidateCustom(request, out List<string> errors))
       {
-        return _responseCreater.CreateFailureResponse<bool>(HttpStatusCode.BadRequest, errors);
+        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest, errors);
       }
 
       DbPosition position = await _repository.GetAsync(positionId);
@@ -58,7 +58,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
       {
         errors.Add($"Position with id: '{position}' doesn't exist.");
 
-        return _responseCreater.CreateFailureResponse<bool>(HttpStatusCode.NotFound, errors);
+        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.NotFound, errors);
       }
 
       foreach (var item in request.Operations)
@@ -69,7 +69,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
         {
           errors.Add("The position contains users. Please change the position to users");
 
-          return _responseCreater.CreateFailureResponse<bool>(HttpStatusCode.Conflict, errors);
+          return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Conflict, errors);
         }
 
         if (item.path.EndsWith(nameof(EditPositionRequest.Name), StringComparison.OrdinalIgnoreCase) &&
@@ -77,7 +77,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
         {
           errors.Add("The position name already exists");
 
-          return _responseCreater.CreateFailureResponse<bool>(HttpStatusCode.Conflict, errors);
+          return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Conflict, errors);
         }
       }
 

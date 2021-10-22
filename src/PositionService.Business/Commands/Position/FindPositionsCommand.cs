@@ -22,25 +22,25 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     private readonly IBaseFindFilterValidator _baseFindFilterValidator;
     private readonly IPositionRepository _repository;
     private readonly IPositionInfoMapper _mapper;
-    private readonly IResponseCreater _responseCreater;
+    private readonly IResponseCreater _responseCreator;
 
     public FindPositionsCommand(
       IBaseFindFilterValidator baseFindFilterValidator,
       IPositionRepository repository,
       IPositionInfoMapper mapper,
-      IResponseCreater responseCreater)
+      IResponseCreater responseCreator)
     {
       _baseFindFilterValidator = baseFindFilterValidator;
       _repository = repository;
       _mapper = mapper;
-      _responseCreater = responseCreater;
+      _responseCreator = responseCreator;
     }
 
     public async Task<FindResultResponse<PositionInfo>> ExecuteAsync(FindPositionsFilter filter)
     {
       if (!_baseFindFilterValidator.ValidateCustom(filter, out List<string> errors))
       {
-        return _responseCreater.CreateFailureFindResponse<PositionInfo>(HttpStatusCode.BadRequest, errors);
+        return _responseCreator.CreateFailureFindResponse<PositionInfo>(HttpStatusCode.BadRequest, errors);
       }
 
       (List<DbPosition> positions, int totalCount) = await _repository.FindAsync(filter);

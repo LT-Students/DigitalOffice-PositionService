@@ -23,7 +23,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     private readonly IPositionRepository _repository;
     private readonly IDbPositionMapper _mapper;
     private readonly IAccessValidator _accessValidator;
-    private readonly IResponseCreater _responseCreater;
+    private readonly IResponseCreater _responseCreator;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CreatePositionCommand(
@@ -31,14 +31,14 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
       IPositionRepository repository,
       IDbPositionMapper mapper,
       IAccessValidator accessValidator,
-      IResponseCreater responseCreater,
+      IResponseCreater responseCreator,
       IHttpContextAccessor httpContextAccessor)
     {
       _validator = validator;
       _repository = repository;
       _mapper = mapper;
       _accessValidator = accessValidator;
-      _responseCreater = responseCreater;
+      _responseCreator = responseCreator;
       _httpContextAccessor = httpContextAccessor;
     }
 
@@ -46,19 +46,19 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     {
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemovePositions))
       {
-        return _responseCreater.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden);
+        return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden);
       }
 
       if (!_validator.ValidateCustom(request, out List<string> errors))
       {
-        return _responseCreater.CreateFailureResponse<Guid?>(HttpStatusCode.BadRequest, errors);
+        return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.BadRequest, errors);
       }
 
       if (await _repository.DoesNameExistAsync(request.Name))
       {
         errors.Add("Position name should be unique.");
 
-        return _responseCreater.CreateFailureResponse<Guid?>(HttpStatusCode.Conflict, errors);
+        return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Conflict, errors);
       }
 
       _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;

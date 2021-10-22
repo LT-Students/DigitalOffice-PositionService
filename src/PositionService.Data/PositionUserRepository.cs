@@ -26,7 +26,7 @@ namespace LT.DigitalOffice.PositionService.Data
         return null;
       }
 
-      _provider.PositionUsers.Add(positionUser);
+      _provider.PositionsUsers.Add(positionUser);
       await _provider.SaveAsync();
 
       return positionUser.Id;
@@ -34,12 +34,12 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<DbPositionUser> GetAsync(Guid userId)
     {
-      return await _provider.PositionUsers.Include(u => u.Position).FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
+      return await _provider.PositionsUsers.Include(u => u.Position).FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
     }
 
     public async Task<List<DbPositionUser>> GetAsync(List<Guid> userIds)
     {
-      return await _provider.PositionUsers
+      return await _provider.PositionsUsers
         .Include(pu => pu.Position)
         .Where(u => userIds.Contains(u.UserId) && u.IsActive)
         .ToListAsync();
@@ -47,7 +47,7 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task RemoveAsync(Guid userId, Guid removedBy)
     {
-      DbPositionUser user = await _provider.PositionUsers.FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
+      DbPositionUser user = await _provider.PositionsUsers.FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
 
       if (user != null)
       {
