@@ -30,7 +30,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         });
 
       AddСorrectOperations(nameof(EditPositionRequest.Name), new() { OperationType.Replace });
-      AddСorrectOperations(nameof(EditPositionRequest.Description), new() { OperationType.Replace, OperationType.Remove });
+      AddСorrectOperations(nameof(EditPositionRequest.Description), new() { OperationType.Replace });
       AddСorrectOperations(nameof(EditPositionRequest.IsActive), new() { OperationType.Replace });
 
       #endregion
@@ -61,13 +61,11 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
 
       AddFailureForPropertyIf(
         nameof(EditPositionRequest.Description),
-        x => x == OperationType.Replace || x == OperationType.Remove,
+        x => x == OperationType.Replace,
         new()
         {
-          { x => !string.IsNullOrEmpty(x.value?.ToString()), "Description should not be empty." },
-          { x => x.value.ToString().Length < 351, "Max lenght of position description is 350 symbols." },
-        },
-        CascadeMode.Stop);
+          { x => x.value?.ToString().Length < 351, "Max lenght of position description is 350 symbols." },
+        });
 
       #endregion
 
