@@ -64,7 +64,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { x => x.value?.ToString().Length < 351, "Max lenght of position description is 350 symbols." },
+          { x => x.value == null ||  x.value.ToString().Length < 351, "Max lenght of position description is 350 symbols." },
         });
 
       #endregion
