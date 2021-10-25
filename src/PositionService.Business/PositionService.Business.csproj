@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\PositionService.Data\PositionService.Data.csproj" />
+    <ProjectReference Include="..\PositionService.Mappers\PositionService.Mappers.csproj" />
+    <ProjectReference Include="..\PositionService.Validation\PositionService.Validation.csproj" />
+  </ItemGroup>
+
+</Project>
