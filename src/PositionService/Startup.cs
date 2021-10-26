@@ -19,7 +19,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using Serilog;
-using System.Text.RegularExpressions;
 using LT.DigitalOffice.UserService.Models.Dto.Configurations;
 using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
@@ -71,7 +70,6 @@ namespace LT.DigitalOffice.PositionService
       services.AddMassTransit(x =>
       {
         x.AddConsumer<GetPositionsConsumer>();
-        x.AddConsumer<EditUserPositionConsumer>();
         x.AddConsumer<DisactivateUserConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
@@ -98,11 +96,6 @@ namespace LT.DigitalOffice.PositionService
       cfg.ReceiveEndpoint(_rabbitMqConfig.GetPositionsEndpoint, ep =>
       {
         ep.ConfigureConsumer<GetPositionsConsumer>(context);
-      });
-
-      cfg.ReceiveEndpoint(_rabbitMqConfig.EditUserPositionEndpoint, ep =>
-      {
-        ep.ConfigureConsumer<EditUserPositionConsumer>(context);
       });
 
       cfg.ReceiveEndpoint(_rabbitMqConfig.DisactivateUserEndpoint, ep =>
