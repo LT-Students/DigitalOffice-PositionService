@@ -59,9 +59,9 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<List<DbPosition>> GetAsync(IGetPositionsRequest request)
     {
-      if (request.UsersIds == null || !request.UsersIds.Any())
+      if (request.UsersIds == null)
       {
-        return null;
+        return await _provider.Positions.Where(p => p.IsActive).ToListAsync();
       }
 
       IQueryable<DbPositionUser> usersPositions = _provider.PositionsUsers

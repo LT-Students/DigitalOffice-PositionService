@@ -55,7 +55,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 
       await context.RespondAsync<IOperationResult<IGetPositionsResponse>>(response);
 
-      if (positions != null && positions.Any())
+      if (positions != null && positions.Any() && context.Message.UsersIds != null)
       {
         string key = context.Message.UsersIds.GetRedisCacheHashCode();
 
