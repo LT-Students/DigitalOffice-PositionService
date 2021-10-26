@@ -56,6 +56,7 @@ namespace LT.DigitalOffice.PositionService.Data
 
       return (await dbPositions.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbPositions.CountAsync());
     }
+
     public async Task<List<DbPosition>> GetAsync(IGetPositionsRequest request)
     {
       if (request.UsersIds == null || !request.UsersIds.Any())
