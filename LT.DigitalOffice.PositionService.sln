@@ -38,8 +38,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Validation"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Broker", "src\PositionService.Broker\PositionService.Broker.csproj", "{92862A8B-5C89-4E64-8465-2929E4AB22DF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "..\DigitalOffice-Models\src\Models\Models.csproj", "{47AFD37F-02C1-4955-9B76-03375B95F5B8}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,10 +84,6 @@ Global
 		{92862A8B-5C89-4E64-8465-2929E4AB22DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92862A8B-5C89-4E64-8465-2929E4AB22DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92862A8B-5C89-4E64-8465-2929E4AB22DF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{47AFD37F-02C1-4955-9B76-03375B95F5B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47AFD37F-02C1-4955-9B76-03375B95F5B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47AFD37F-02C1-4955-9B76-03375B95F5B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47AFD37F-02C1-4955-9B76-03375B95F5B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
