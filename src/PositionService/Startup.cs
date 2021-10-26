@@ -69,6 +69,7 @@ namespace LT.DigitalOffice.PositionService
 
       services.AddMassTransit(x =>
       {
+        x.AddConsumer<CreateUserPositionConsumer>();
         x.AddConsumer<GetPositionsConsumer>();
         x.AddConsumer<DisactivateUserConsumer>();
 
@@ -93,6 +94,11 @@ namespace LT.DigitalOffice.PositionService
       IBusRegistrationContext context,
       IRabbitMqBusFactoryConfigurator cfg)
     {
+      cfg.ReceiveEndpoint(_rabbitMqConfig.CreateUserPositionEndpoint, ep =>
+      {
+        ep.ConfigureConsumer<CreateUserPositionConsumer>(context);
+      });
+
       cfg.ReceiveEndpoint(_rabbitMqConfig.GetPositionsEndpoint, ep =>
       {
         ep.ConfigureConsumer<GetPositionsConsumer>(context);
