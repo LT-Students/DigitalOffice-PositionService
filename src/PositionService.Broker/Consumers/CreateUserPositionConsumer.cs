@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.Broker;
-using LT.DigitalOffice.Kernel.Exceptions.Models;
 using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Mappers.Db.Interfaces;
@@ -19,7 +18,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
     {
       if (!await _positionRepository.DoesExistAsync(request.PositionId))
       {
-        throw new NotFoundException("Position doesn't exist.");
+        return false;
       }
 
       return (await _userRepository.CreateAsync(_mapper.Map(request))) != null;
