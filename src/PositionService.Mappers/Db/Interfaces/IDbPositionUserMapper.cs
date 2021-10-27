@@ -8,8 +8,6 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db.Interfaces
   [AutoInject]
   public interface IDbPositionUserMapper
   {
-    DbPositionUser Map(Guid userId, Guid positionId, Guid modifiedBy);
-
-    DbPositionUser Map(IEditUserPositionRequest request);
+    DbPositionUser Map(ICreateUserPositionRequest request);
   }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.Attributes;
+using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position.Filters;
 using Microsoft.AspNetCore.JsonPatch;
@@ -15,7 +16,7 @@ namespace LT.DigitalOffice.PositionService.Data.Interfaces
 
     Task<DbPosition> GetAsync(Guid positionId);
 
-    Task<List<DbPosition>> GetAsync(List<Guid> positionsIds, bool includeUsers);
+    Task<List<DbPosition>> GetAsync(IGetPositionsRequest request);
 
     Task<(List<DbPosition>, int totalCount)> FindAsync(FindPositionsFilter filter);
 

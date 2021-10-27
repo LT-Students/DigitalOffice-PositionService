@@ -7,20 +7,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
 {
   public class DbPositionUserMapper : IDbPositionUserMapper
   {
-    public DbPositionUser Map(Guid userId, Guid positionId, Guid modifiedBy)
-    {
-      return new DbPositionUser
-      {
-        Id = Guid.NewGuid(),
-        UserId = userId,
-        PositionId = positionId,
-        IsActive = true,
-        CreatedBy = modifiedBy,
-        CreatedAtUtc = DateTime.UtcNow
-      };
-    }
-
-    public DbPositionUser Map(IEditUserPositionRequest request)
+    public DbPositionUser Map(ICreateUserPositionRequest request)
     {
       if (request == null)
       {
@@ -32,8 +19,9 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
         Id = Guid.NewGuid(),
         UserId = request.UserId,
         PositionId = request.PositionId,
+        Rate = request.Rate,
         IsActive = true,
-        CreatedBy = request.ModifiedBy,
+        CreatedBy = request.CreatedBy,
         CreatedAtUtc = DateTime.UtcNow
       };
     }
