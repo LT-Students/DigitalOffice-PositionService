@@ -38,7 +38,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
     {
       object response = OperationResultWrapper.CreateResponse(CreateAsync, context.Message);
 
-      await context.RespondAsync<IOperationResult<Guid?>>(response);
+      await context.RespondAsync<IOperationResult<bool>>(response);
     }
   }
 }
