@@ -16,12 +16,12 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
   {
     private readonly IPositionRepository _repository;
     private readonly IPositionInfoMapper _mapper;
-    private readonly IResponseCreater _responseCreator;
+    private readonly IResponseCreator _responseCreator;
 
     public GetPositionCommand(
       IPositionRepository repository,
       IPositionInfoMapper mapper,
-      IResponseCreater responseCreator)
+      IResponseCreator responseCreator)
     {
       _repository = repository;
       _mapper = mapper;

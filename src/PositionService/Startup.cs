@@ -19,10 +19,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using Serilog;
-using LT.DigitalOffice.UserService.Models.Dto.Configurations;
 using LT.DigitalOffice.Kernel.Helpers;
-using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.PositionService.Broker.Consumers;
+using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
 
 namespace LT.DigitalOffice.PositionService
 {
@@ -219,9 +218,6 @@ namespace LT.DigitalOffice.PositionService
 
       services.AddSingleton<IConnectionMultiplexer>(
         x => ConnectionMultiplexer.Connect(redisConnStr));
-
-      services.AddTransient<IRedisHelper, RedisHelper>();
-      services.AddTransient<ICacheNotebook, CacheNotebook>();
 
       services.AddBusinessObjects();
 

@@ -22,13 +22,13 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     private readonly IBaseFindFilterValidator _baseFindFilterValidator;
     private readonly IPositionRepository _repository;
     private readonly IPositionInfoMapper _mapper;
-    private readonly IResponseCreater _responseCreator;
+    private readonly IResponseCreator _responseCreator;
 
     public FindPositionsCommand(
       IBaseFindFilterValidator baseFindFilterValidator,
       IPositionRepository repository,
       IPositionInfoMapper mapper,
-      IResponseCreater responseCreator)
+      IResponseCreator responseCreator)
     {
       _baseFindFilterValidator = baseFindFilterValidator;
       _repository = repository;

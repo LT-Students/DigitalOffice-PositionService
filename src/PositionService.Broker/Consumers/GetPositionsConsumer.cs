@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.Kernel.Broker;
-using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Extensions;
 using MassTransit;
 using Microsoft.Extensions.Options;
 using LT.DigitalOffice.Models.Broker.Requests.Position;
-using LT.DigitalOffice.UserService.Models.Dto.Configurations;
-using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Models.Broker.Responses.Position;
 using LT.DigitalOffice.Models.Broker.Models.Position;
 using LT.DigitalOffice.PositionService.Mappers.Data.Interfaces;
+using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
+using LT.DigitalOffice.Kernel.RedisSupport.Constants;
 
 namespace LT.DigitalOffice.PositionService.Broker.Consumers
 {

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using LT.DigitalOffice.PositionService.Mappers.PatchDocument.Interfaces;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using System.Threading.Tasks;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 
 namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 {
@@ -24,7 +25,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     private readonly IPositionRepository _repository;
     private readonly IPatchDbPositionMapper _mapper;
     private readonly IAccessValidator _accessValidator;
-    private readonly IResponseCreater _responseCreator;
+    private readonly IResponseCreator _responseCreator;
     private readonly ICacheNotebook _cacheNotebook;
 
     public EditPositionCommand(
@@ -32,7 +33,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
       IPositionRepository repository,
       IPatchDbPositionMapper mapper,
       IAccessValidator accessValidator,
-      IResponseCreater responseCreator,
+      IResponseCreator responseCreator,
       ICacheNotebook cacheNotebook)
     {
       _validator = validator;
