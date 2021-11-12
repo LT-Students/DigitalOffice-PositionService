@@ -8,16 +8,21 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
   public class DisactivateUserConsumer : IConsumer<IDisactivateUserRequest>
   {
     private readonly IPositionUserRepository _positionUserRepository;
+    private readonly IUserRateRepository _userRateRepository;
 
     public DisactivateUserConsumer(
-      IPositionUserRepository positionUserRepository)
+      IPositionUserRepository positionUserRepository,
+      IUserRateRepository userRateRepository)
     {
       _positionUserRepository = positionUserRepository;
+      _userRateRepository = userRateRepository;
     }
 
     public async Task Consume(ConsumeContext<IDisactivateUserRequest> context)
     {
-      await _positionUserRepository.RemoveAsync(context.Message.UserId, context.Message.ModifiedBy);
+      await Task.WhenAll(
+        _positionUserRepository.RemoveAsync(context.Message.UserId, context.Message.ModifiedBy),
+        _userRateRepository.RemoveAsync(context.Message.UserId, context.Message.ModifiedBy));
     }
   }
 }

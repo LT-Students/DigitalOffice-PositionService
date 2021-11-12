@@ -6,14 +6,14 @@ namespace LT.DigitalOffice.PositionService.Mappers.Data
 {
   public class PositionUserDataMapper : IPositionUserDataMapper
   {
-    public PositionUserData Map(DbPositionUser user)
+    public PositionUserData Map(DbPositionUser user, DbUserRate rate)
     {
       if (user == null)
       {
         return null;
       }
 
-      return new(user.UserId, user.Rate, user.CreatedAtUtc);
+      return new(user.UserId, rate.Rate, user.CreatedAtUtc);
     }
   }
 }
