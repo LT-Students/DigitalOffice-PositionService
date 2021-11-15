@@ -37,7 +37,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
 
     public DbPositionUser Map(CreatePositionUserRequest request)
     {
-      if (request == null)
+      if (request is null)
       {
         return null;
       }

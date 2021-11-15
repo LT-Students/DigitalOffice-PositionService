@@ -17,7 +17,7 @@ namespace LT.DigitalOffice.PositionService.Validation.PositionUser
           var position = await positionUserRepository.GetAsync(request.UserId);
           return position is not null && position.IsActive && position.PositionId != request.PositionId;
         })
-        .WithMessage("Incorrect position for this user");
+        .WithMessage("Incorrect position for this user.");
 
       RuleFor(x => x.PositionId)
         .MustAsync(async (id, _) => await positionRepository.DoesExistAsync(id))
