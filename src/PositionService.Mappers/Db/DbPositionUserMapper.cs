@@ -19,7 +19,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
 
     public DbPositionUser Map(ICreateUserPositionRequest request)
     {
-      if (request == null)
+      if (request is null)
       {
         return null;
       }
