@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Provider;
 using LT.DigitalOffice.PositionService.Models.Db;
@@ -43,6 +44,27 @@ namespace LT.DigitalOffice.PositionService.Data
         .Include(pu => pu.Position)
         .Where(u => userIds.Contains(u.UserId) && u.IsActive)
         .ToListAsync();
+    }
+
+    public async Task<List<(DbPositionUser position, DbUserRate rate)>> GetAsync(IGetPositionsRequest request)
+    {
+      return (await
+        (from positionUser in _provider.PositionsUsers
+         join position in _provider.Positions on positionUser.PositionId equals position.Id
+         join rate in _provider.UsersRates on positionUser.UserId equals rate.UserId
+         where positionUser.IsActive && request.UsersIds.Contains(positionUser.UserId) && rate.IsActive
+         select new
+         {
+           Position = position,
+           PositionUser = positionUser,
+           Rate = rate
+         }).ToListAsync())
+         .Select(data =>
+         {
+           data.PositionUser.Position = data.Position;
+
+           return (data.PositionUser, data.Rate);
+         }).ToList();
     }
 
     public async Task RemoveAsync(Guid userId, Guid removedBy)

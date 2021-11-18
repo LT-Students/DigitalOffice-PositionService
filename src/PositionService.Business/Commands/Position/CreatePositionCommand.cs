@@ -23,7 +23,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     private readonly IPositionRepository _repository;
     private readonly IDbPositionMapper _mapper;
     private readonly IAccessValidator _accessValidator;
-    private readonly IResponseCreater _responseCreator;
+    private readonly IResponseCreator _responseCreator;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CreatePositionCommand(
@@ -31,7 +31,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
       IPositionRepository repository,
       IDbPositionMapper mapper,
       IAccessValidator accessValidator,
-      IResponseCreater responseCreator,
+      IResponseCreator responseCreator,
       IHttpContextAccessor httpContextAccessor)
     {
       _validator = validator;

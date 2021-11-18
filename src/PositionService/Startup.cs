@@ -19,10 +19,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using Serilog;
-using LT.DigitalOffice.UserService.Models.Dto.Configurations;
 using LT.DigitalOffice.Kernel.Helpers;
-using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.PositionService.Broker.Consumers;
+using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
 
 namespace LT.DigitalOffice.PositionService
 {
@@ -135,7 +134,7 @@ namespace LT.DigitalOffice.PositionService
         .GetSection(BaseServiceInfoConfig.SectionName)
         .Get<BaseServiceInfoConfig>();
 
-      Version = "1.0.0.0";
+      Version = "1.0.1.0";
       Description = "PositionService is an API that intended to work with position.";
       StartTime = DateTime.UtcNow;
       ApiName = $"LT Digital Office - {_serviceInfoConfig.Name}";
@@ -219,9 +218,6 @@ namespace LT.DigitalOffice.PositionService
 
       services.AddSingleton<IConnectionMultiplexer>(
         x => ConnectionMultiplexer.Connect(redisConnStr));
-
-      services.AddTransient<IRedisHelper, RedisHelper>();
-      services.AddTransient<ICacheNotebook, CacheNotebook>();
 
       services.AddBusinessObjects();
 
