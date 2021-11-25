@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using LT.DigitalOffice.Kernel.Broker;
+using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
 using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Mappers.Db.Interfaces;

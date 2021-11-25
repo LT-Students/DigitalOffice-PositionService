@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using LT.DigitalOffice.Models.Broker.Models.Position;
 using LT.DigitalOffice.PositionService.Mappers.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Db;
 

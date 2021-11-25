@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LT.DigitalOffice.PositionService.Data.Interfaces;
-using LT.DigitalOffice.PositionService.Models.Db;
-using LT.DigitalOffice.Kernel.Broker;
-using LT.DigitalOffice.Kernel.Extensions;
-using MassTransit;
-using Microsoft.Extensions.Options;
+using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
+using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
+using LT.DigitalOffice.Kernel.RedisSupport.Constants;
+using LT.DigitalOffice.Kernel.RedisSupport.Extensions;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
+using LT.DigitalOffice.Models.Broker.Models.Position;
 using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.Models.Broker.Responses.Position;
-using LT.DigitalOffice.Models.Broker.Models.Position;
+using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Mappers.Data.Interfaces;
-using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
-using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
-using LT.DigitalOffice.Kernel.RedisSupport.Constants;
+using LT.DigitalOffice.PositionService.Models.Db;
+using MassTransit;
+using Microsoft.Extensions.Options;
 
 namespace LT.DigitalOffice.PositionService.Broker.Consumers
 {

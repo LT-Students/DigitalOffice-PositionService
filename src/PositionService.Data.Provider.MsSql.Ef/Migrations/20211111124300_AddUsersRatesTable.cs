@@ -13,7 +13,7 @@ namespace LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef.Migrations
     private void CreateUsersRatesTable(MigrationBuilder migrationBuilder)
     {
       migrationBuilder.CreateTable(
-        name: DbUserRate.TableName,
+        name: "DbUserRate",
         columns: table => new
         {
           Id = table.Column<Guid>(nullable: false),
@@ -46,7 +46,7 @@ namespace LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef.Migrations
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-      migrationBuilder.DropTable(DbUserRate.TableName);
+      migrationBuilder.DropTable("DbUserRate");
 
       migrationBuilder.AddColumn<double>(
         name: "Rate",
