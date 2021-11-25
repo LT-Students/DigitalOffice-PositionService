@@ -10,10 +10,8 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
   public class CreateUserPositionConsumer : IConsumer<ICreateUserPositionRequest>
   {
     private readonly IPositionUserRepository _userRepository;
-    private readonly IUserRateRepository _userRateRepository;
     private readonly IPositionRepository _positionRepository;
     private readonly IDbPositionUserMapper _positionMapper;
-    private readonly IDbUserRateMapper _rateMapper;
 
     private async Task<bool> CreateAsync(ICreateUserPositionRequest request)
     {
@@ -23,24 +21,19 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
       }
 
       await Task.WhenAll(
-        _userRepository.CreateAsync(_positionMapper.Map(request)),
-        _userRateRepository.CreateAsync(_rateMapper.Map(request)));
+        _userRepository.CreateAsync(_positionMapper.Map(request)));
 
       return true;
     }
 
     public CreateUserPositionConsumer(
       IPositionUserRepository userRepository,
-      IUserRateRepository userRateRepository,
       IPositionRepository positionRepository,
-      IDbPositionUserMapper userMapper,
-      IDbUserRateMapper rateMapper)
+      IDbPositionUserMapper userMapper)
     {
       _userRepository = userRepository;
-      _userRateRepository = userRateRepository;
       _positionRepository = positionRepository;
       _positionMapper = userMapper;
-      _rateMapper = rateMapper;
     }
 
     public async Task Consume(ConsumeContext<ICreateUserPositionRequest> context)

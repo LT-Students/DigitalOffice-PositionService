@@ -18,7 +18,6 @@ namespace LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef
 
     public DbSet<DbPosition> Positions { get; set; }
     public DbSet<DbPositionUser> PositionsUsers { get; set; }
-    public DbSet<DbUserRate> UsersRates { get; set; }
 
     // Fluent API is written here.
     protected override void OnModelCreating(ModelBuilder modelBuilder)

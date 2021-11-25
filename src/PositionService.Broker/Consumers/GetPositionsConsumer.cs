@@ -28,16 +28,11 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 
     private async Task<List<PositionData>> GetPositionAsync(IGetPositionsRequest request)
     {
-      List<(DbPositionUser position, DbUserRate rate)> usersInfo = await _userRepository.GetAsync(request);
+      List<DbPositionUser> usersInfo = await _userRepository.GetAsync(request);
 
-      List<DbPosition> positions = usersInfo.Select(u => u.position.Position).Distinct().ToList();
+      List<DbPosition> positions = usersInfo.Select(u => u.Position).Distinct().ToList();
 
-      return positions.Select(
-        p => _positionDataMapper.Map(p, usersInfo
-          .Select(u => u.rate)
-          .Where(r => p.Users.Any(u => u.UserId == r.UserId))
-          .ToList()))
-        .ToList();
+      return positions.Select(p => _positionDataMapper.Map(p)).ToList();
     }
 
     public GetPositionsConsumer(

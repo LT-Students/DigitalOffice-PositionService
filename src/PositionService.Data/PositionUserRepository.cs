@@ -46,24 +46,22 @@ namespace LT.DigitalOffice.PositionService.Data
         .ToListAsync();
     }
 
-    public async Task<List<(DbPositionUser position, DbUserRate rate)>> GetAsync(IGetPositionsRequest request)
+    public async Task<List<DbPositionUser>> GetAsync(IGetPositionsRequest request)
     {
       return (await
         (from positionUser in _provider.PositionsUsers
          join position in _provider.Positions on positionUser.PositionId equals position.Id
-         join rate in _provider.UsersRates on positionUser.UserId equals rate.UserId
-         where positionUser.IsActive && request.UsersIds.Contains(positionUser.UserId) && rate.IsActive
+         where positionUser.IsActive && request.UsersIds.Contains(positionUser.UserId)
          select new
          {
            Position = position,
            PositionUser = positionUser,
-           Rate = rate
          }).ToListAsync())
          .Select(data =>
          {
            data.PositionUser.Position = data.Position;
 
-           return (data.PositionUser, data.Rate);
+           return (data.PositionUser);
          }).ToList();
     }
 
