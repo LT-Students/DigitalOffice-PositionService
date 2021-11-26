@@ -48,21 +48,15 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<List<DbPositionUser>> GetAsync(IGetPositionsRequest request)
     {
-      return (await
-        (from positionUser in _provider.PositionsUsers
-         join position in _provider.Positions on positionUser.PositionId equals position.Id
-         where positionUser.IsActive && request.UsersIds.Contains(positionUser.UserId)
-         select new
-         {
-           Position = position,
-           PositionUser = positionUser,
-         }).ToListAsync())
-         .Select(data =>
-         {
-           data.PositionUser.Position = data.Position;
+      if (request is null)
+      {
+        return null;
+      }
 
-           return (data.PositionUser);
-         }).ToList();
+      return await _provider.PositionsUsers
+        .Include(pu => pu.Position)
+        .Where(u => u.IsActive && request.UsersIds.Contains(u.UserId))
+        .ToListAsync();
     }
 
     public async Task RemoveAsync(Guid userId, Guid removedBy)
