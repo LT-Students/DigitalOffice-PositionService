@@ -11,6 +11,5 @@ namespace LT.DigitalOffice.PositionService.Data.Provider
   {
     DbSet<DbPosition> Positions { get; set; }
     DbSet<DbPositionUser> PositionsUsers { get; set; }
-    DbSet<DbUserRate> UsersRates { get; set; }
   }
 }
