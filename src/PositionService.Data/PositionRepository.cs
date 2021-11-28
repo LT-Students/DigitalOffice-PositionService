@@ -59,16 +59,16 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<List<DbPosition>> GetAsync(IGetPositionsRequest request)
     {
-      if (request.UsersIds == null)
+      IQueryable<DbPosition> dbPosition = _provider.Positions.AsQueryable();
+
+      if (request.UsersIds is not null && request.UsersIds.Any())
       {
-        return await _provider.Positions.Where(p => p.IsActive).ToListAsync();
+        dbPosition = dbPosition.Where(d => d.IsActive && d.Users.Any(du => request.UsersIds.Contains(du.UserId)));
       }
 
-      IQueryable<DbPositionUser> usersPositions = _provider.PositionsUsers
-        .Where(u => u.IsActive && request.UsersIds.Contains(u.UserId))
-        .Include(u => u.Position);
+      dbPosition = dbPosition.Include(d => d.Users.Where(du => du.IsActive));
 
-      return (await usersPositions.ToListAsync()).Select(pu => pu.Position).ToList();
+      return await dbPosition.ToListAsync();
     }
 
     public async Task<bool> ContainsUsersAsync(Guid positionId)

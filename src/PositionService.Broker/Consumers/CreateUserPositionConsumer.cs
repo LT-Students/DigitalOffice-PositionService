@@ -20,8 +20,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
         return false;
       }
 
-      await Task.WhenAll(
-        _userRepository.CreateAsync(_positionMapper.Map(request)));
+      await _userRepository.CreateAsync(_positionMapper.Map(request));
 
       return true;
     }

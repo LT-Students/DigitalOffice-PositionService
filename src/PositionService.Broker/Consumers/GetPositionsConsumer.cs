@@ -20,29 +20,27 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 {
   public class GetPositionsConsumer : IConsumer<IGetPositionsRequest>
   {
-    private readonly IPositionUserRepository _userRepository;
+    private readonly IPositionRepository _repository;
     private readonly IOptions<RedisConfig> _redisConfig;
     private readonly IRedisHelper _redisHelper;
     private readonly ICacheNotebook _cacheNotebook;
     private readonly IPositionDataMapper _positionDataMapper;
 
-    private async Task<List<PositionData>> GetPositionAsync(IGetPositionsRequest request)
+    private async Task<List<PositionData>> GetPositionsAsync(IGetPositionsRequest request)
     {
-      List<DbPositionUser> usersInfo = await _userRepository.GetAsync(request);
+      List<DbPosition> dbPositions = await _repository.GetAsync(request);
 
-      List<DbPosition> positions = usersInfo.Select(u => u.Position).Distinct().ToList();
-
-      return positions.Select(p => _positionDataMapper.Map(p)).ToList();
+      return dbPositions.Select(p => _positionDataMapper.Map(p)).ToList();
     }
 
     public GetPositionsConsumer(
-      IPositionUserRepository userRepository,
+      IPositionRepository repository,
       IOptions<RedisConfig> redisConfig,
       IRedisHelper redisHelper,
       ICacheNotebook cacheNotebook,
       IPositionDataMapper positionDataMapper)
     {
-      _userRepository = userRepository;
+      _repository = repository;
       _redisConfig = redisConfig;
       _redisHelper = redisHelper;
       _cacheNotebook = cacheNotebook;
@@ -51,7 +49,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 
     public async Task Consume(ConsumeContext<IGetPositionsRequest> context)
     {
-      List<PositionData> positions = await GetPositionAsync(context.Message);
+      List<PositionData> positions = await GetPositionsAsync(context.Message);
 
       object response = OperationResultWrapper.CreateResponse((_) => IGetPositionsResponse.CreateObj(positions), context.Message);
 
