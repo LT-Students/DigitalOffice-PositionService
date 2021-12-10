@@ -13,7 +13,7 @@ namespace LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef.Migrations
     private void CreateUsersRatesTable(MigrationBuilder migrationBuilder)
     {
       migrationBuilder.CreateTable(
-        name: "DbUserRate",
+        name: "UsersRates",
         columns: table => new
         {
           Id = table.Column<Guid>(nullable: false),
