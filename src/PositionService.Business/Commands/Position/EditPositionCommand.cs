@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
-using LT.DigitalOffice.PositionService.Data.Interfaces;
-using LT.DigitalOffice.PositionService.Models.Db;
-using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position;
-using LT.DigitalOffice.PositionService.Validation.Position.Interfaces;
-using LT.DigitalOffice.Kernel.AccessValidatorEngine.Interfaces;
+using System.Threading.Tasks;
+using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
-using LT.DigitalOffice.Kernel.Responses;
-using Microsoft.AspNetCore.JsonPatch;
-using LT.DigitalOffice.PositionService.Mappers.PatchDocument.Interfaces;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
-using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
+using LT.DigitalOffice.Kernel.Responses;
+using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
+using LT.DigitalOffice.PositionService.Data.Interfaces;
+using LT.DigitalOffice.PositionService.Mappers.PatchDocument.Interfaces;
+using LT.DigitalOffice.PositionService.Models.Db;
+using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position;
+using LT.DigitalOffice.PositionService.Validation.Position.Interfaces;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 {

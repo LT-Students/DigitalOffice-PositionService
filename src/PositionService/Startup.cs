@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using HealthChecks.UI.Client;
-using LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef;
-using LT.DigitalOffice.PositionService.Models.Dto.Configuration;
+using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
+using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
+using LT.DigitalOffice.Kernel.BrokerSupport.Middlewares.Token;
 using LT.DigitalOffice.Kernel.Configurations;
 using LT.DigitalOffice.Kernel.Extensions;
+using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Middlewares.ApiInformation;
-using LT.DigitalOffice.Kernel.Middlewares.Token;
+using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
+using LT.DigitalOffice.PositionService.Broker.Consumers;
+using LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef;
+using LT.DigitalOffice.PositionService.Models.Dto.Configuration;
 using MassTransit;
 using MassTransit.RabbitMqTransport;
 using Microsoft.AspNetCore.Builder;
@@ -17,11 +22,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
 using Serilog;
-using LT.DigitalOffice.Kernel.Helpers;
-using LT.DigitalOffice.PositionService.Broker.Consumers;
-using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
+using StackExchange.Redis;
 
 namespace LT.DigitalOffice.PositionService
 {

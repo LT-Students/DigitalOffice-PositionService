@@ -7,6 +7,6 @@ namespace LT.DigitalOffice.PositionService.Mappers.Data.Interfaces
   [AutoInject]
   public interface IPositionUserDataMapper
   {
-    PositionUserData Map(DbPositionUser user, DbUserRate rate);
+    PositionUserData Map(DbPositionUser user);
   }
 }
