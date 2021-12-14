@@ -16,7 +16,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Data
 
     public PositionData Map(DbPosition position)
     {
-      if (position == null)
+      if (position is null)
       {
         return null;
       }
