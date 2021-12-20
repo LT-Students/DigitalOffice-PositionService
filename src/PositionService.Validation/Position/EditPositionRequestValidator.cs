@@ -52,7 +52,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { async x => await _positionRepository.DoesNameExistAsync(x.value?.ToString()), "The position name already exists" }
+          { async x => !await _positionRepository.DoesNameExistAsync(x.value?.ToString()), "The position name already exists" }
         });
 
       #endregion
