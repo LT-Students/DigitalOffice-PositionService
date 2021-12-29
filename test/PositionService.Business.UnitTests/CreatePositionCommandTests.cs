@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
@@ -82,8 +83,20 @@ namespace PositionService.Business.UnitTests
       _autoMocker.GetMock<IPositionRepository>().Reset();
 
       _autoMocker
+        .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
+        .ReturnsAsync(true);
+
+      _autoMocker
+        .Setup<ICreatePositionRequestValidator, bool>(x => x.ValidateAsync(_request, default).Result.IsValid)
+        .Returns(true);
+
+      _autoMocker
         .Setup<IDbPositionMapper, DbPosition>(x => x.Map(_request))
         .Returns(_dbPosition);
+
+      _autoMocker
+        .Setup<IPositionRepository, Task<Guid?>>(x => x.CreateAsync(_dbPosition))
+        .ReturnsAsync(_dbPosition.Id);
     }
 
     [Test]
@@ -102,29 +115,25 @@ namespace PositionService.Business.UnitTests
       SerializerAssert.AreEqual(expectedResponse, await _command.ExecuteAsync(_request));
 
       _autoMocker.Verify<IAccessValidator>(
-        x => x.HasRightsAsync(Rights.AddEditRemovePositions),
+        x => x.HasRightsAsync(It.IsAny<int>()),
         Times.Once);
 
       _autoMocker.Verify<ICreatePositionRequestValidator>(
-        x => x.ValidateAsync(_request, default),
+        x => x.ValidateAsync(It.IsAny<CreatePositionRequest>(), It.IsAny<CancellationToken>()),
         Times.Never);
 
       _autoMocker.Verify<IDbPositionMapper>(
-        x => x.Map(_request),
+        x => x.Map(It.IsAny<CreatePositionRequest>()),
         Times.Never);
 
       _autoMocker.Verify<IPositionRepository>(
-        x => x.CreateAsync(_dbPosition),
+        x => x.CreateAsync(It.IsAny<DbPosition>()),
         Times.Never);
     }
 
     [Test]
-    public async Task ShouldReturnFailedResponseWhenValidationInFailedAsync()
+    public async Task ShouldReturnFailedResponseWhenValidationIsFailedAsync()
     {
-      _autoMocker
-        .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
-        .ReturnsAsync(true);
-
       _autoMocker
         .Setup<ICreatePositionRequestValidator, bool>(x => x.ValidateAsync(_request, default).Result.IsValid)
         .Returns(false);
@@ -138,33 +147,25 @@ namespace PositionService.Business.UnitTests
       SerializerAssert.AreEqual(expectedResponse, await _command.ExecuteAsync(_request));
 
       _autoMocker.Verify<IAccessValidator>(
-        x => x.HasRightsAsync(Rights.AddEditRemovePositions),
+        x => x.HasRightsAsync(It.IsAny<int>()),
         Times.Once);
 
       _autoMocker.Verify<ICreatePositionRequestValidator>(
-        x => x.ValidateAsync(_request, default),
+        x => x.ValidateAsync(It.IsAny<CreatePositionRequest>(), It.IsAny<CancellationToken>()),
         Times.Once);
 
       _autoMocker.Verify<IDbPositionMapper>(
-        x => x.Map(_request),
+        x => x.Map(It.IsAny<CreatePositionRequest>()),
         Times.Never);
 
       _autoMocker.Verify<IPositionRepository>(
-        x => x.CreateAsync(_dbPosition),
+        x => x.CreateAsync(It.IsAny<DbPosition>()),
         Times.Never);
     }
 
     [Test]
     public async Task ShouldReturnFailedResponseWhenRepositoryReturnNullAsync()
     {
-      _autoMocker
-        .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
-        .ReturnsAsync(true);
-
-      _autoMocker
-        .Setup<ICreatePositionRequestValidator, bool>(x => x.ValidateAsync(_request, default).Result.IsValid)
-        .Returns(true);
-
       _autoMocker
         .Setup<IPositionRepository, Task<Guid?>>(x => x.CreateAsync(_dbPosition))
         .ReturnsAsync((Guid?)null);
@@ -178,37 +179,25 @@ namespace PositionService.Business.UnitTests
       SerializerAssert.AreEqual(expectedResponse, await _command.ExecuteAsync(_request));
 
       _autoMocker.Verify<IAccessValidator>(
-        x => x.HasRightsAsync(Rights.AddEditRemovePositions),
+        x => x.HasRightsAsync(It.IsAny<int>()),
         Times.Once);
 
       _autoMocker.Verify<ICreatePositionRequestValidator>(
-        x => x.ValidateAsync(_request, default),
+        x => x.ValidateAsync(It.IsAny<CreatePositionRequest>(), It.IsAny<CancellationToken>()),
         Times.Once);
 
       _autoMocker.Verify<IDbPositionMapper>(
-        x => x.Map(_request),
+        x => x.Map(It.IsAny<CreatePositionRequest>()),
         Times.Once);
 
       _autoMocker.Verify<IPositionRepository>(
-        x => x.CreateAsync(_dbPosition),
+        x => x.CreateAsync(It.IsAny<DbPosition>()),
         Times.Once);
     }
 
     [Test]
     public async Task ShouldCreatePositionSuccesfullAsync()
     {
-      _autoMocker
-        .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
-        .ReturnsAsync(true);
-
-      _autoMocker
-        .Setup<ICreatePositionRequestValidator, bool>(x => x.ValidateAsync(_request, default).Result.IsValid)
-        .Returns(true);
-
-      _autoMocker
-        .Setup<IPositionRepository, Task<Guid?>>(x => x.CreateAsync(_dbPosition))
-        .ReturnsAsync(_dbPosition.Id);
-
       OperationResultResponse<Guid?> expectedResponse = new()
       {
         Status = OperationResultStatusType.FullSuccess,
@@ -218,19 +207,19 @@ namespace PositionService.Business.UnitTests
       SerializerAssert.AreEqual(expectedResponse, await _command.ExecuteAsync(_request));
 
       _autoMocker.Verify<IAccessValidator>(
-        x => x.HasRightsAsync(Rights.AddEditRemovePositions),
+        x => x.HasRightsAsync(It.IsAny<int>()),
         Times.Once);
 
       _autoMocker.Verify<ICreatePositionRequestValidator>(
-        x => x.ValidateAsync(_request, default),
+        x => x.ValidateAsync(It.IsAny<CreatePositionRequest>(), It.IsAny<CancellationToken>()),
         Times.Once);
 
       _autoMocker.Verify<IDbPositionMapper>(
-        x => x.Map(_request),
+        x => x.Map(It.IsAny<CreatePositionRequest>()),
         Times.Once);
 
       _autoMocker.Verify<IPositionRepository>(
-        x => x.CreateAsync(_dbPosition),
+        x => x.CreateAsync(It.IsAny<DbPosition>()),
         Times.Once);
     }
   }
