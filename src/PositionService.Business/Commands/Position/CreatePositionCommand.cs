@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
@@ -57,13 +56,18 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
           validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
 
+      OperationResultResponse<Guid?> response = new();
+
+      response.Body = await _repository.CreateAsync(_mapper.Map(request));
+
       _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-      return new()
+      if (response.Body is null)
       {
-        Status = OperationResultStatusType.FullSuccess,
-        Body = await _repository.CreateAsync(_mapper.Map(request))
-      };
+        response = _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.BadRequest);
+      }
+
+      return response;
     }
   }
 }
