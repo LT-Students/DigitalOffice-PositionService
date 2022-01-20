@@ -6,6 +6,6 @@ namespace LT.DigitalOffice.PositionService.Models.Dto.Configuration
   {
     public string CreateUserPositionEndpoint { get; set; }
     public string GetPositionsEndpoint { get; set; }
-    public string DisactivateUserEndpoint { get; set; }
+    public string DisactivatePositionUserEndpoint { get; set; }
   }
 }
