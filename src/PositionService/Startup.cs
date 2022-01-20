@@ -105,7 +105,7 @@ namespace LT.DigitalOffice.PositionService
         ep.ConfigureConsumer<GetPositionsConsumer>(context);
       });
 
-      cfg.ReceiveEndpoint(_rabbitMqConfig.DisactivateUserEndpoint, ep =>
+      cfg.ReceiveEndpoint(_rabbitMqConfig.DisactivatePositionUserEndpoint, ep =>
       {
         ep.ConfigureConsumer<DisactivateUserConsumer>(context);
       });
