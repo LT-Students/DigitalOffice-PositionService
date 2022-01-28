@@ -2,9 +2,9 @@
 
 namespace LT.DigitalOffice.PositionService.Models.Dto.Requests.PositionUser
 {
-  public record CreatePositionUserRequest
+  public record EditPositionUserRequest
   {
     public Guid UserId { get; set; }
-    public Guid PositionId { get; set; }
+    public Guid? PositionId { get; set; }
   }
 }
