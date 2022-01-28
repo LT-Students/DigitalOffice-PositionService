@@ -81,7 +81,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
 
       if (response.Body)
       {
-        //ToDo add clear user Position data by userId
+        //ToDo add clear cache user Position data by userId
       }
 
       response.Status = response.Body 
