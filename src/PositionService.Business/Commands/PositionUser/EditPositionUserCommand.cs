@@ -6,6 +6,7 @@ using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Enums;
+using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
@@ -14,14 +15,16 @@ using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.PositionUser;
 using LT.DigitalOffice.PositionService.Validation.PositionUser.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
 {
-  public class CreatePositionUserCommand : ICreatePositionUserCommand
+  public class EditPositionUserCommand : IEditPositionUserCommand
   {
     private readonly IAccessValidator _accessValidator;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IResponseCreator _responseCreator;
-    private readonly ICreatePositionUserRequestValidator _validator;
+    private readonly IEditPositionUserRequestValidator _validator;
     private readonly IDbPositionUserMapper _mapper;
     private readonly IPositionUserRepository _repository;
     private readonly ICacheNotebook _cacheNotebook;
@@ -35,15 +38,17 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
         _cacheNotebook.RemoveAsync(newPositionId));
     }
 
-    public CreatePositionUserCommand(
+    public EditPositionUserCommand(
       IAccessValidator accessValidator,
+      IHttpContextAccessor httpContextAccessor,
       IResponseCreator responseCreator,
-      ICreatePositionUserRequestValidator validator,
+      IEditPositionUserRequestValidator validator,
       IDbPositionUserMapper mapper,
       IPositionUserRepository repository,
       ICacheNotebook cacheNotebook)
     {
       _accessValidator = accessValidator;
+      _httpContextAccessor = httpContextAccessor;
       _responseCreator = responseCreator;
       _validator = validator;
       _mapper = mapper;
@@ -51,7 +56,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
       _cacheNotebook = cacheNotebook;
     }
 
-    public async Task<OperationResultResponse<bool>> ExecuteAsync(CreatePositionUserRequest request)
+    public async Task<OperationResultResponse<bool>> ExecuteAsync(EditPositionUserRequest request)
     {
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemovePositions))
       {
@@ -66,19 +71,24 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
           HttpStatusCode.BadRequest,
           validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
+      OperationResultResponse<bool> response = new();
 
-      Guid? result = await _repository.CreateAsync(_mapper.Map(request));
+      await _repository.RemoveAsync(request.UserId, _httpContextAccessor.HttpContext.GetUserId());
 
-      if (result.HasValue)
+      response.Body = request.PositionId.HasValue
+        ? (await _repository.CreateAsync(_mapper.Map(request))).HasValue
+        : true;
+
+      if (response.Body)
       {
-        await ClearCache(request.UserId, request.PositionId);
+        //ToDo add clear cache user Position data by userId
       }
 
-      return new OperationResultResponse<bool>
-      {
-        Status = result.HasValue ? OperationResultStatusType.FullSuccess : OperationResultStatusType.Failed,
-        Body = result.HasValue
-      };
+      response.Status = response.Body 
+        ? OperationResultStatusType.FullSuccess
+        : OperationResultStatusType.Failed;
+
+      return response;
     }
   }
 }

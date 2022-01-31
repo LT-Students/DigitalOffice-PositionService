@@ -6,8 +6,8 @@ using LT.DigitalOffice.PositionService.Models.Dto.Requests.PositionUser;
 namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser.Interfaces
 {
   [AutoInject]
-  public interface ICreatePositionUserCommand
+  public interface IEditPositionUserCommand
   {
-    Task<OperationResultResponse<bool>> ExecuteAsync(CreatePositionUserRequest request);
+    Task<OperationResultResponse<bool>> ExecuteAsync(EditPositionUserRequest request);
   }
 }

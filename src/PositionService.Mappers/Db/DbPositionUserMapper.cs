@@ -35,7 +35,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
       };
     }
 
-    public DbPositionUser Map(CreatePositionUserRequest request)
+    public DbPositionUser Map(EditPositionUserRequest request)
     {
       if (request is null)
       {
@@ -46,7 +46,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
       {
         Id = Guid.NewGuid(),
         UserId = request.UserId,
-        PositionId = request.PositionId,
+        PositionId = request.PositionId.Value,
         IsActive = true,
         CreatedBy = _httpContextAccessor.HttpContext.GetUserId(),
         CreatedAtUtc = DateTime.UtcNow

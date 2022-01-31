@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Provider;
 using LT.DigitalOffice.PositionService.Models.Db;
@@ -22,7 +21,7 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<Guid?> CreateAsync(DbPositionUser positionUser)
     {
-      if (positionUser == null)
+      if (positionUser is null)
       {
         return null;
       }
@@ -46,28 +45,16 @@ namespace LT.DigitalOffice.PositionService.Data
         .ToListAsync();
     }
 
-    public async Task<List<DbPositionUser>> GetAsync(IGetPositionsRequest request)
-    {
-      if (request is null)
-      {
-        return null;
-      }
-
-      return await _provider.PositionsUsers
-        .Include(pu => pu.Position)
-        .Where(u => u.IsActive && request.UsersIds.Contains(u.UserId))
-        .ToListAsync();
-    }
-
     public async Task RemoveAsync(Guid userId, Guid removedBy)
     {
-      DbPositionUser user = await _provider.PositionsUsers.FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
+      DbPositionUser dbPositionUser = await _provider.PositionsUsers
+        .FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
 
-      if (user != null)
+      if (dbPositionUser is not null)
       {
-        user.IsActive = false;
-        user.ModifiedAtUtc = DateTime.UtcNow;
-        user.ModifiedBy = removedBy;
+        dbPositionUser.IsActive = false;
+        dbPositionUser.ModifiedAtUtc = DateTime.UtcNow;
+        dbPositionUser.ModifiedBy = removedBy;
         await _provider.SaveAsync();
       }
     }

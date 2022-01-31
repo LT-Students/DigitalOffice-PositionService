@@ -9,6 +9,6 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db.Interfaces
   public interface IDbPositionUserMapper
   {
     DbPositionUser Map(ICreateUserPositionRequest request);
-    DbPositionUser Map(CreatePositionUserRequest request);
+    DbPositionUser Map(EditPositionUserRequest request);
   }
 }
