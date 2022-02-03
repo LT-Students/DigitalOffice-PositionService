@@ -66,7 +66,7 @@ namespace LT.DigitalOffice.PositionService.Data
         dbPosition = dbPosition
           .Where(d => 
             d.IsActive
-            && d.Users.Any(du => request.UsersIds.Contains(du.UserId) && du.IsActive));
+            && d.Users.Any(du => du.IsActive && request.UsersIds.Contains(du.UserId)));
       }
 
       dbPosition = dbPosition.Include(d => d.Users.Where(du => du.IsActive));
