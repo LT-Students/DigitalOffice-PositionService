@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Mappers.Db.Interfaces;
@@ -12,6 +13,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
     private readonly IPositionUserRepository _userRepository;
     private readonly IPositionRepository _positionRepository;
     private readonly IDbPositionUserMapper _positionMapper;
+    private readonly IGlobalCacheRepository _globalCache;
 
     private async Task<bool> CreateAsync(ICreateUserPositionRequest request)
     {
@@ -21,6 +23,8 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
       }
 
       await _userRepository.CreateAsync(_positionMapper.Map(request));
+
+      await _globalCache.RemoveAsync(request.PositionId);
 
       return true;
     }

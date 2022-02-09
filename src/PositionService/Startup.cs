@@ -12,6 +12,7 @@ using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Middlewares.ApiInformation;
 using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
 using LT.DigitalOffice.Kernel.RedisSupport.Constants;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers;
 using LT.DigitalOffice.PositionService.Broker.Consumers;
 using LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef;
 using LT.DigitalOffice.PositionService.Models.Dto.Configuration;
@@ -125,27 +126,6 @@ namespace LT.DigitalOffice.PositionService
       context.Database.Migrate();
     }
 
-    private void FlushRedisDatabase(string redisConnStr)
-    {
-      try
-      {
-        using (ConnectionMultiplexer cm = ConnectionMultiplexer.Connect(redisConnStr + ",allowAdmin=true,connectRetry=1,connectTimeout=2000"))
-        {
-          EndPoint[] endpoints = cm.GetEndPoints(true);
-
-          foreach (EndPoint endpoint in endpoints)
-          {
-            IServer server = cm.GetServer(endpoint);
-            server.FlushDatabase(Cache.Positions);
-          }
-        }
-      }
-      catch (Exception ex)
-      {
-        Log.Error($"Error while flushing Redis database. Text: {ex.Message}");
-      }
-    }
-
     #endregion
 
     public Startup(IConfiguration configuration)
@@ -254,7 +234,11 @@ namespace LT.DigitalOffice.PositionService
     {
       UpdateDatabase(app);
 
-      FlushRedisDatabase(redisConnStr);
+      string error = FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Positions);
+      if (error is not null)
+      {
+        Log.Error(error);
+      }
 
       app.UseForwardedHeaders();
 
