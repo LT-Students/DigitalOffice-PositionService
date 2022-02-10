@@ -10,9 +10,9 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 {
   public class CreateUserPositionConsumer : IConsumer<ICreateUserPositionRequest>
   {
-    private readonly IPositionUserRepository _userRepository;
+    private readonly IPositionUserRepository _positionUserRepository;
     private readonly IPositionRepository _positionRepository;
-    private readonly IDbPositionUserMapper _positionMapper;
+    private readonly IDbPositionUserMapper _positionUserMapper;
     private readonly IGlobalCacheRepository _globalCache;
 
     private async Task<bool> CreateAsync(ICreateUserPositionRequest request)
@@ -22,7 +22,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
         return false;
       }
 
-      await _userRepository.CreateAsync(_positionMapper.Map(request));
+      await _positionUserRepository.CreateAsync(_positionUserMapper.Map(request));
 
       await _globalCache.RemoveAsync(request.PositionId);
 
@@ -30,14 +30,14 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
     }
 
     public CreateUserPositionConsumer(
-      IPositionUserRepository userRepository,
+      IPositionUserRepository positionUserRepository,
       IPositionRepository positionRepository,
-      IDbPositionUserMapper userMapper,
+      IDbPositionUserMapper positionUserMapper,
       IGlobalCacheRepository globalCache)
     {
-      _userRepository = userRepository;
+      _positionUserRepository = positionUserRepository;
       _positionRepository = positionRepository;
-      _positionMapper = userMapper;
+      _positionUserMapper = positionUserMapper;
       _globalCache = globalCache;
     }
 
