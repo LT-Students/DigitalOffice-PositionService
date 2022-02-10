@@ -32,11 +32,13 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
     public CreateUserPositionConsumer(
       IPositionUserRepository userRepository,
       IPositionRepository positionRepository,
-      IDbPositionUserMapper userMapper)
+      IDbPositionUserMapper userMapper,
+      IGlobalCacheRepository globalCache)
     {
       _userRepository = userRepository;
       _positionRepository = positionRepository;
       _positionMapper = userMapper;
+      _globalCache = globalCache;
     }
 
     public async Task Consume(ConsumeContext<ICreateUserPositionRequest> context)
