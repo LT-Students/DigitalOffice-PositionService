@@ -22,8 +22,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
   {
     private readonly IPositionRepository _repository;
     private readonly IOptions<RedisConfig> _redisConfig;
-    private readonly IRedisHelper _redisHelper;
-    private readonly ICacheNotebook _cacheNotebook;
+    private readonly IGlobalCacheRepository _globalCache;
     private readonly IPositionDataMapper _positionDataMapper;
 
     private async Task<List<PositionData>> GetPositionsAsync(IGetPositionsRequest request)
@@ -36,14 +35,12 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
     public GetPositionsConsumer(
       IPositionRepository repository,
       IOptions<RedisConfig> redisConfig,
-      IRedisHelper redisHelper,
-      ICacheNotebook cacheNotebook,
+      IGlobalCacheRepository globalCache,
       IPositionDataMapper positionDataMapper)
     {
       _repository = repository;
       _redisConfig = redisConfig;
-      _redisHelper = redisHelper;
-      _cacheNotebook = cacheNotebook;
+      _globalCache = globalCache;
       _positionDataMapper = positionDataMapper;
     }
 
@@ -59,9 +56,12 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
       {
         string key = context.Message.UsersIds.GetRedisCacheHashCode();
 
-        await _redisHelper.CreateAsync(Cache.Positions, key, positions, TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
-
-        _cacheNotebook.Add(positions.Select(p => p.Id).ToList(), Cache.Positions, key);
+        await _globalCache.CreateAsync(
+          Cache.Positions,
+          key,
+          positions,
+          positions.Select(p => p.Id).ToList(),
+          TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
       }
     }
   }
