@@ -26,7 +26,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     private readonly IPatchDbPositionMapper _mapper;
     private readonly IAccessValidator _accessValidator;
     private readonly IResponseCreator _responseCreator;
-    private readonly ICacheNotebook _cacheNotebook;
+    private readonly IGlobalCacheRepository _globalCache;
 
     public EditPositionCommand(
       IEditPositionRequestValidator validator,
@@ -34,14 +34,14 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
       IPatchDbPositionMapper mapper,
       IAccessValidator accessValidator,
       IResponseCreator responseCreator,
-      ICacheNotebook cacheNotebook)
+      IGlobalCacheRepository globalCache)
     {
       _validator = validator;
       _repository = repository;
       _mapper = mapper;
       _accessValidator = accessValidator;
       _responseCreator = responseCreator;
-      _cacheNotebook = cacheNotebook;
+      _globalCache = globalCache;
     }
 
     public async Task<OperationResultResponse<bool>> ExecuteAsync(Guid positionId, JsonPatchDocument<EditPositionRequest> request)
@@ -81,7 +81,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 
       if (result)
       {
-        await _cacheNotebook.RemoveAsync(positionId);
+        await _globalCache.RemoveAsync(positionId);
       }
 
       return new()

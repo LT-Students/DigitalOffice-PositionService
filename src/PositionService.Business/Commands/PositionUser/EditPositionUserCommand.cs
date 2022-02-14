@@ -27,15 +27,15 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
     private readonly IEditPositionUserRequestValidator _validator;
     private readonly IDbPositionUserMapper _mapper;
     private readonly IPositionUserRepository _repository;
-    private readonly ICacheNotebook _cacheNotebook;
+    private readonly IGlobalCacheRepository _globalCache;
 
     private async Task ClearCache(Guid userId, Guid newPositionId)
     {
       Guid positionId = (await _repository.GetAsync(userId)).PositionId;
 
       await Task.WhenAll(
-        _cacheNotebook.RemoveAsync(positionId),
-        _cacheNotebook.RemoveAsync(newPositionId));
+        _globalCache.RemoveAsync(positionId),
+        _globalCache.RemoveAsync(newPositionId));
     }
 
     public EditPositionUserCommand(
@@ -45,7 +45,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
       IEditPositionUserRequestValidator validator,
       IDbPositionUserMapper mapper,
       IPositionUserRepository repository,
-      ICacheNotebook cacheNotebook)
+      IGlobalCacheRepository globalCache)
     {
       _accessValidator = accessValidator;
       _httpContextAccessor = httpContextAccessor;
@@ -53,7 +53,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
       _validator = validator;
       _mapper = mapper;
       _repository = repository;
-      _cacheNotebook = cacheNotebook;
+      _globalCache = globalCache;
     }
 
     public async Task<OperationResultResponse<bool>> ExecuteAsync(EditPositionUserRequest request)

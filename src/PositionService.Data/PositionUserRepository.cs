@@ -46,18 +46,22 @@ namespace LT.DigitalOffice.PositionService.Data
         .ToListAsync();
     }
 
-    public async Task RemoveAsync(Guid userId, Guid removedBy)
+    public async Task<Guid?> RemoveAsync(Guid userId, Guid removedBy)
     {
       DbPositionUser dbPositionUser = await _provider.PositionsUsers
         .FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
 
-      if (dbPositionUser is not null)
+      if (dbPositionUser is null)
       {
-        dbPositionUser.IsActive = false;
-        dbPositionUser.ModifiedAtUtc = DateTime.UtcNow;
-        dbPositionUser.ModifiedBy = removedBy;
-        await _provider.SaveAsync();
+        return null;
       }
+
+      dbPositionUser.IsActive = false;
+      dbPositionUser.ModifiedAtUtc = DateTime.UtcNow;
+      dbPositionUser.ModifiedBy = removedBy;
+      await _provider.SaveAsync();
+
+      return dbPositionUser.PositionId;
     }
   }
 }
