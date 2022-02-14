@@ -9,8 +9,9 @@ namespace LT.DigitalOffice.PositionService.Models.Dto.Configuration
     public string CreateUserPositionEndpoint { get; set; }
     public string GetPositionsEndpoint { get; set; }
     public string DisactivatePositionUserEndpoint { get; set; }
+    public string FilterPositionsEndpoint { get; set; }
 
-    [AutoInjectRequest(typeof(ICheckUsersExistence))]
+  [AutoInjectRequest(typeof(ICheckUsersExistence))]
     public string CheckUsersExistenceEndpoint { get; set; }
   }
 }

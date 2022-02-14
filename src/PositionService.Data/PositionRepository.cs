@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using LT.DigitalOffice.Kernel.Extensions;
+using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Provider;
 using LT.DigitalOffice.PositionService.Models.Db;
-using LT.DigitalOffice.Kernel.Extensions;
+using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
-using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position.Filters;
-using System.Threading.Tasks;
-using LT.DigitalOffice.Models.Broker.Requests.Position;
 
 namespace LT.DigitalOffice.PositionService.Data
 {
@@ -73,6 +73,14 @@ namespace LT.DigitalOffice.PositionService.Data
 
       return await dbPosition.ToListAsync();
     }
+
+    public async Task<List<DbPosition>> GetPositionsAsync(List<Guid> positionsIds)
+    {
+      return await _provider.Positions.Where(
+        p => positionsIds.Contains(p.Id)).Include(p => p.Users.Where(u => u.IsActive))
+        .ToListAsync();
+    }
+
 
     public async Task<bool> ContainsUsersAsync(Guid positionId)
     {

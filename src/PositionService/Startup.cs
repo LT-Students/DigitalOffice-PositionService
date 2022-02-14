@@ -73,6 +73,7 @@ namespace LT.DigitalOffice.PositionService
         x.AddConsumer<CreateUserPositionConsumer>();
         x.AddConsumer<GetPositionsConsumer>();
         x.AddConsumer<DisactivateUserConsumer>();
+        x.AddConsumer<FilterPositionsUsersConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
         {
@@ -108,6 +109,11 @@ namespace LT.DigitalOffice.PositionService
       cfg.ReceiveEndpoint(_rabbitMqConfig.DisactivatePositionUserEndpoint, ep =>
       {
         ep.ConfigureConsumer<DisactivateUserConsumer>(context);
+      });
+
+      cfg.ReceiveEndpoint(_rabbitMqConfig.FilterPositionsEndpoint, ep =>
+      {
+        ep.ConfigureConsumer<FilterPositionsUsersConsumer>(context);
       });
     }
 
