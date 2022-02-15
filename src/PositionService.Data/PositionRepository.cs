@@ -74,13 +74,12 @@ namespace LT.DigitalOffice.PositionService.Data
       return await dbPosition.ToListAsync();
     }
 
-    public async Task<List<DbPosition>> GetPositionsAsync(List<Guid> positionsIds)
+    public async Task<List<DbPosition>> GetAsync(List<Guid> positionsIds)
     {
       return await _provider.Positions.Where(
         p => positionsIds.Contains(p.Id)).Include(p => p.Users.Where(u => u.IsActive))
         .ToListAsync();
     }
-
 
     public async Task<bool> ContainsUsersAsync(Guid positionId)
     {

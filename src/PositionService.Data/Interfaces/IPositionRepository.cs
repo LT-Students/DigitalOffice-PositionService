@@ -19,7 +19,7 @@ namespace LT.DigitalOffice.PositionService.Data.Interfaces
 
     Task<List<DbPosition>> GetAsync(IGetPositionsRequest request);
 
-    Task<List<DbPosition>> GetPositionsAsync(List<Guid> positionsIds);
+    Task<List<DbPosition>> GetAsync(List<Guid> positionsIds);
 
     Task<(List<DbPosition>, int totalCount)> FindAsync(FindPositionsFilter filter);
 

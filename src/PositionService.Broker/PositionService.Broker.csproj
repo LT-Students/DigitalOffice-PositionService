@@ -3,7 +3,6 @@
   <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
 
   <ItemGroup>
-      <!-->ProjectReference Include="..\..\..\DigitalOffice-Models\src\Models\Models.csproj" /-->
     <ProjectReference Include="..\PositionService.Data\PositionService.Data.csproj" />
     <ProjectReference Include="..\PositionService.Mappers\PositionService.Mappers.csproj" />
   </ItemGroup>

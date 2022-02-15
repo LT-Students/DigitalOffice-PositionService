@@ -17,7 +17,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 
     public async Task<List<PositionFilteredData>> GetPositionFilteredData(IFilterPositionsRequest request)
     {
-      List<DbPosition> dbPosition = await _repository.GetPositionsAsync(request.PositionsIds);
+      List<DbPosition> dbPosition = await _repository.GetAsync(request.PositionsIds);
 
       return dbPosition.Select(
         pd => new PositionFilteredData(
