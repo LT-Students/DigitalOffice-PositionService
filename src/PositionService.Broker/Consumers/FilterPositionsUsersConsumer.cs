@@ -23,8 +23,10 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
         pd => new PositionFilteredData(
           pd.Id,
           pd.Name,
-          pd.Users.Where(u => u.IsActive).Select(u => u.UserId).ToList())).ToList();
+          pd.Users.Select(u => u.UserId).ToList()))
+        .ToList();
     }
+
     public FilterPositionsUsersConsumer(
       IPositionRepository repository)
     {

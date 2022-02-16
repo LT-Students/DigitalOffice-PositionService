@@ -76,8 +76,9 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<List<DbPosition>> GetAsync(List<Guid> positionsIds)
     {
-      return await _provider.Positions.Where(
-        p => positionsIds.Contains(p.Id)).Include(p => p.Users.Where(u => u.IsActive))
+      return await _provider.Positions
+        .Where(
+          p => positionsIds.Contains(p.Id)).Include(p => p.Users.Where(u => u.IsActive))
         .ToListAsync();
     }
 
