@@ -11,7 +11,7 @@ namespace LT.DigitalOffice.PositionService.Models.Dto.Configuration
     public string DisactivatePositionUserEndpoint { get; set; }
     public string FilterPositionsEndpoint { get; set; }
 
-  [AutoInjectRequest(typeof(ICheckUsersExistence))]
+    [AutoInjectRequest(typeof(ICheckUsersExistence))]
     public string CheckUsersExistenceEndpoint { get; set; }
   }
 }
