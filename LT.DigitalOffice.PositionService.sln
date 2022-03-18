@@ -38,10 +38,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Broker", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Business.UnitTests", "test\PositionService.Business.UnitTests\PositionService.Business.UnitTests.csproj", "{DA4E035E-7FFC-464D-85D6-9DB4AFEAC9DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kernel", "..\DigitalOffice-Kernel\src\Kernel\Kernel.csproj", "{ED3CF4C0-F751-4D0F-8537-8B0317B53F97}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kernel.DataSupport", "..\DigitalOffice-Kernel\src\Kernel.DataSupport\Kernel.DataSupport.csproj", "{09AAAD18-1715-4DC4-995B-C2C4D83FF5E6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,14 +84,6 @@ Global
 		{DA4E035E-7FFC-464D-85D6-9DB4AFEAC9DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA4E035E-7FFC-464D-85D6-9DB4AFEAC9DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA4E035E-7FFC-464D-85D6-9DB4AFEAC9DB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED3CF4C0-F751-4D0F-8537-8B0317B53F97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED3CF4C0-F751-4D0F-8537-8B0317B53F97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED3CF4C0-F751-4D0F-8537-8B0317B53F97}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED3CF4C0-F751-4D0F-8537-8B0317B53F97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09AAAD18-1715-4DC4-995B-C2C4D83FF5E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09AAAD18-1715-4DC4-995B-C2C4D83FF5E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09AAAD18-1715-4DC4-995B-C2C4D83FF5E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09AAAD18-1715-4DC4-995B-C2C4D83FF5E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
