@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="($(AssemblyName.Contains('.Provider')) Or $(AssemblyName.Contains('.Models.Db'))) And $(AssemblyName.Contains('.UnitTests')) != 'true'">
-    <ProjectReference Include="..\..\..\DigitalOffice-Kernel\src\Kernel.DataSupport\Kernel.DataSupport.csproj" />
     <PackageReference Include="LT.DigitalOffice.Kernel.DataSupport" Version="1.0.0" />
   </ItemGroup>
 
