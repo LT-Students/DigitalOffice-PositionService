@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Text.Json.Serialization;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
 using LT.DigitalOffice.Kernel.BrokerSupport.Middlewares.Token;
 using LT.DigitalOffice.Kernel.Configurations;
+using LT.DigitalOffice.Kernel.DataSupport.Database;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Middlewares.ApiInformation;
@@ -14,7 +14,6 @@ using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
 using LT.DigitalOffice.Kernel.RedisSupport.Constants;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers;
 using LT.DigitalOffice.PositionService.Broker.Consumers;
-using LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef;
 using LT.DigitalOffice.PositionService.Models.Dto.Configuration;
 using MassTransit;
 using MassTransit.RabbitMqTransport;
@@ -127,7 +126,7 @@ namespace LT.DigitalOffice.PositionService
         .GetRequiredService<IServiceScopeFactory>()
         .CreateScope();
 
-      using var context = serviceScope.ServiceProvider.GetService<PositionServiceDbContext>();
+      using var context = serviceScope.ServiceProvider.GetService<ServiceDbContext>();
 
       context.Database.Migrate();
     }
@@ -207,7 +206,7 @@ namespace LT.DigitalOffice.PositionService
         Log.Information($"SQL connection string from environment was used. Value '{PasswordHider.Hide(connStr)}'.");
       }
 
-      services.AddDbContext<PositionServiceDbContext>(options =>
+      services.AddDbContext<ServiceDbContext>(options =>
       {
         options.UseSqlServer(connStr);
       });

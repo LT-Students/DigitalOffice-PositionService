@@ -4,7 +4,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PositionService.Data.Provider.MsSql.Ef\PositionService.Data.Provider.MsSql.Ef.csproj" />
-    <ProjectReference Include="..\PositionService.Data.Provider\PositionService.Data.Provider.csproj" />
     <ProjectReference Include="..\PositionService.Models.Dto\PositionService.Models.Dto.csproj" />
   </ItemGroup>
 

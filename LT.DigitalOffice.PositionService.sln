@@ -24,8 +24,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Business", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Data", "src\PositionService.Data\PositionService.Data.csproj", "{C50B7F51-2A44-457F-B11F-12B047B0C1A8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Data.Provider", "src\PositionService.Data.Provider\PositionService.Data.Provider.csproj", "{765EF262-C91C-4A82-896B-4CF7EBEADB9F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Data.Provider.MsSql.Ef", "src\PositionService.Data.Provider.MsSql.Ef\PositionService.Data.Provider.MsSql.Ef.csproj", "{A966BE88-671F-447A-8C70-BFD691FC4519}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Mappers", "src\PositionService.Mappers\PositionService.Mappers.csproj", "{4F1E1725-76EE-42BA-B638-F30A967D5ABB}"
@@ -39,6 +37,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Broker", "src\PositionService.Broker\PositionService.Broker.csproj", "{92862A8B-5C89-4E64-8465-2929E4AB22DF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionService.Business.UnitTests", "test\PositionService.Business.UnitTests\PositionService.Business.UnitTests.csproj", "{DA4E035E-7FFC-464D-85D6-9DB4AFEAC9DB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kernel", "..\DigitalOffice-Kernel\src\Kernel\Kernel.csproj", "{ED3CF4C0-F751-4D0F-8537-8B0317B53F97}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kernel.DataSupport", "..\DigitalOffice-Kernel\src\Kernel.DataSupport\Kernel.DataSupport.csproj", "{09AAAD18-1715-4DC4-995B-C2C4D83FF5E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,10 +60,6 @@ Global
 		{C50B7F51-2A44-457F-B11F-12B047B0C1A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C50B7F51-2A44-457F-B11F-12B047B0C1A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C50B7F51-2A44-457F-B11F-12B047B0C1A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{765EF262-C91C-4A82-896B-4CF7EBEADB9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{765EF262-C91C-4A82-896B-4CF7EBEADB9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{765EF262-C91C-4A82-896B-4CF7EBEADB9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{765EF262-C91C-4A82-896B-4CF7EBEADB9F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A966BE88-671F-447A-8C70-BFD691FC4519}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A966BE88-671F-447A-8C70-BFD691FC4519}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A966BE88-671F-447A-8C70-BFD691FC4519}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -90,6 +88,14 @@ Global
 		{DA4E035E-7FFC-464D-85D6-9DB4AFEAC9DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA4E035E-7FFC-464D-85D6-9DB4AFEAC9DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA4E035E-7FFC-464D-85D6-9DB4AFEAC9DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED3CF4C0-F751-4D0F-8537-8B0317B53F97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED3CF4C0-F751-4D0F-8537-8B0317B53F97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED3CF4C0-F751-4D0F-8537-8B0317B53F97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED3CF4C0-F751-4D0F-8537-8B0317B53F97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09AAAD18-1715-4DC4-995B-C2C4D83FF5E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09AAAD18-1715-4DC4-995B-C2C4D83FF5E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09AAAD18-1715-4DC4-995B-C2C4D83FF5E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09AAAD18-1715-4DC4-995B-C2C4D83FF5E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,7 +104,6 @@ Global
 		{2531AA49-D606-4FD3-8D0A-13685331B8BE} = {EFF2007A-BF84-47AC-9725-FBDF34306F71}
 		{7CB6E754-78B5-457F-A23B-0C0A99742691} = {EFF2007A-BF84-47AC-9725-FBDF34306F71}
 		{C50B7F51-2A44-457F-B11F-12B047B0C1A8} = {EFF2007A-BF84-47AC-9725-FBDF34306F71}
-		{765EF262-C91C-4A82-896B-4CF7EBEADB9F} = {EFF2007A-BF84-47AC-9725-FBDF34306F71}
 		{A966BE88-671F-447A-8C70-BFD691FC4519} = {EFF2007A-BF84-47AC-9725-FBDF34306F71}
 		{4F1E1725-76EE-42BA-B638-F30A967D5ABB} = {EFF2007A-BF84-47AC-9725-FBDF34306F71}
 		{969707DD-9959-47BC-8F0E-02E6534BD0F6} = {EFF2007A-BF84-47AC-9725-FBDF34306F71}

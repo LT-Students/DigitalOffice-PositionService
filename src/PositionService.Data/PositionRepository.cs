@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LT.DigitalOffice.Kernel.DataSupport.Database.Interfaces;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
-using LT.DigitalOffice.PositionService.Data.Provider;
 using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position.Filters;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +34,7 @@ namespace LT.DigitalOffice.PositionService.Data
         return null;
       }
 
-      _provider.Positions.Add(newPosition);
+      _provider.Add(newPosition);
       await _provider.SaveAsync();
 
       return newPosition.Id;
@@ -42,12 +42,12 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<DbPosition> GetAsync(Guid positionId)
     {
-      return await _provider.Positions.FirstOrDefaultAsync(d => d.Id == positionId);
+      return await _provider.Get<DbPosition>().FirstOrDefaultAsync(d => d.Id == positionId);
     }
 
     public async Task<(List<DbPosition>, int totalCount)> FindAsync(FindPositionsFilter filter)
     {
-      IQueryable<DbPosition> dbPositions = _provider.Positions.AsQueryable();
+      IQueryable<DbPosition> dbPositions = _provider.Get<DbPosition>();
 
       if (!filter.IncludeDeactivated)
       {
@@ -59,12 +59,12 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<List<DbPosition>> GetAsync(IGetPositionsRequest request)
     {
-      IQueryable<DbPosition> dbPosition = _provider.Positions.AsQueryable();
+      IQueryable<DbPosition> dbPosition = _provider.Get<DbPosition>();
 
       if (request.UsersIds is not null && request.UsersIds.Any())
       {
         dbPosition = dbPosition
-          .Where(d => 
+          .Where(d =>
             d.IsActive
             && d.Users.Any(du => du.IsActive && request.UsersIds.Contains(du.UserId)));
       }
@@ -76,7 +76,7 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<List<DbPosition>> GetAsync(List<Guid> positionsIds)
     {
-      return await _provider.Positions
+      return await _provider.Get<DbPosition>()
         .Where(
           p => positionsIds.Contains(p.Id)).Include(p => p.Users.Where(u => u.IsActive))
         .ToListAsync();
@@ -84,7 +84,7 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<bool> ContainsUsersAsync(Guid positionId)
     {
-      return await _provider.PositionsUsers
+      return await _provider.Get<DbPositionUser>()
         .AnyAsync(pu => pu.PositionId == positionId && pu.IsActive);
     }
 
@@ -105,12 +105,12 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<bool> DoesNameExistAsync(string name)
     {
-      return await _provider.Positions.AnyAsync(p => p.Name == name);
+      return await _provider.Get<DbPosition>().AnyAsync(p => p.Name == name);
     }
 
     public async Task<bool> DoesExistAsync(Guid positionId)
     {
-      return await _provider.Positions.AnyAsync(p => p.Id == positionId);
+      return await _provider.Get<DbPosition>().AnyAsync(p => p.Id == positionId);
     }
   }
 }

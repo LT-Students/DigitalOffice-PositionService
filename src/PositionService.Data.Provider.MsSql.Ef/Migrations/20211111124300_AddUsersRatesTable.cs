@@ -1,4 +1,5 @@
 ﻿using System;
+using LT.DigitalOffice.Kernel.DataSupport.Database;
 using LT.DigitalOffice.PositionService.Models.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef.Migrations
 {
-  [DbContext(typeof(PositionServiceDbContext))]
+  [DbContext(typeof(ServiceDbContext))]
   [Migration("20211111124300_AddUsersRatesTable")]
   public class AddUsersRatesTable : Migration
   {
