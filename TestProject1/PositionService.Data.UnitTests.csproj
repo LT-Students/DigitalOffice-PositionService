@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LT.DigitalOffice.UnitTestKernel" Version="1.0.4" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\PositionService.Data.Provider\PositionService.Data.Provider.csproj" />
+    <ProjectReference Include="..\src\PositionService.Data\PositionService.Data.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -146,10 +146,10 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
         status: OperationResultStatusType.Failed,
         errors: new List<string>() { "Error message" });
 
-      //_mocker
-      // .Setup<IBaseFindFilterValidator, bool>(x =>
-      //   x.ValidateCustom<FindPositionsFilter>(It.IsAny<FindPositionsFilter>(), out res))
-      // .Returns(false);
+      _mocker
+       .Setup<IBaseFindFilterValidator, bool>(x =>
+         x.ValidateCustom(It.IsAny<FindPositionsFilter>(), out res))
+       .Returns(false);
 
       _mocker
        .Setup<IResponseCreator, FindResultResponse<PositionInfo>>(x =>
