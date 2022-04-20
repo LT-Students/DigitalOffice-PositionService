@@ -24,15 +24,17 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     private DbContextOptions<PositionServiceDbContext> _dbContext;
 
     private DbPosition _position;
+    private DbPosition _position1;
+    private DbPosition _position2;
     private Guid _creatorId = Guid.NewGuid();
 
     private AutoMocker _mocker;
     private Mock<IHttpContextAccessor> _accessorMock;
 
-    [OneTimeSetUp]
-    public void OneTimeSetUp()
+    [SetUp]
+    public void SetUp()
     {
-      _position = new DbPosition()
+      _position1 = new DbPosition()
       {
         Id = Guid.NewGuid(),
         Name = "TestName",
@@ -42,14 +44,29 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         CreatedBy = _creatorId,
       };
 
+      DbPosition _position2 = new DbPosition()
+      {
+        Id = Guid.NewGuid(),
+        Name = "TestName2",
+        Description = "TestDescription2",
+        IsActive = true,
+        CreatedAtUtc = DateTime.UtcNow,
+        CreatedBy = _creatorId,
+      };
+
+      CreateMemoryDb();
+
+      _provider.Positions.AddRange(_position1);
+      _provider.Positions.AddRange(_position2);
+      _provider.Save();
+    }
+
+    public void CreateMemoryDb()
+    {
       _dbContext = new DbContextOptionsBuilder<PositionServiceDbContext>()
                  .UseInMemoryDatabase(databaseName: "PositionServiceTes")
                  .Options;
-    }
 
-    [SetUp]
-    public void SetUp()
-    {
       _accessorMock = new();
       IDictionary<object, object> _items = new Dictionary<object, object>();
       _items.Add("UserId", _creatorId);
@@ -62,18 +79,28 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       _repository = new PositionRepository(_provider, _accessorMock.Object);
     }
 
-    //[TearDown]
-    //public void CleanDb()
-    //{
-    //  if (_provider.IsInMemory())
-    //  {
-    //    _provider.EnsureDeleted();
-    //  }
-    //}
+    [TearDown]
+    public void CleanDb()
+    {
+      if (_provider.IsInMemory())
+      {
+        _provider.EnsureDeleted();
+      }
+    }
 
     [Test]
     public async Task AddPositionTest()
     {
+      DbPosition _position = new DbPosition()
+      {
+        Id = Guid.NewGuid(),
+        Name = "TestName",
+        Description = "TestDescription",
+        IsActive = true,
+        CreatedAtUtc = DateTime.UtcNow,
+        CreatedBy = _creatorId,
+      };
+
       SerializerAssert.AreEqual(_position.Id, await _repository.CreateAsync(_position));
     }
 
@@ -86,7 +113,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     [Test]
     public async Task GetPositionTest()
     {
-      SerializerAssert.AreEqual(_position, await _repository.GetAsync(_position.Id));
+      SerializerAssert.AreEqual(_position1, await _repository.GetAsync(_position1.Id));
     }
 
     [Test]
@@ -98,18 +125,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     [Test]
     public async Task FindPositionTest() //?
     {
-      DbPosition position = new DbPosition()
-      {
-        Id = Guid.NewGuid(),
-        Name = "TestName2",
-        Description = "TestDescription2",
-        IsActive = true,
-        CreatedAtUtc = DateTime.UtcNow,
-        CreatedBy = _creatorId,
-      };
-
-      await _repository.CreateAsync(position);
-      List<DbPosition> positions = new List<DbPosition>() { _position, position };
+      List<DbPosition> positions = new List<DbPosition>() { _position1, _position2 };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
         SkipCount = 0,
