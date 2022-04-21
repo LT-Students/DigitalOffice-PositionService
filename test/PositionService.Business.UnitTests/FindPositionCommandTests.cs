@@ -95,6 +95,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
       _mocker.GetMock<IPositionRepository>().Reset();
       _mocker.GetMock<IPositionInfoMapper>().Reset();
       _mocker.GetMock<IResponseCreator>().Reset();
+      _mocker.GetMock<IBaseFindFilterValidator>().Reset();
     }
 
     [Test]
@@ -148,7 +149,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
 
       _mocker
        .Setup<IBaseFindFilterValidator, bool>(x =>
-         x.ValidateCustom(It.IsAny<FindPositionsFilter>(), out res))
+         x.Validate(It.IsAny<IValidationContext>()).IsValid)
        .Returns(false);
 
       _mocker
@@ -162,7 +163,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
         Errors = new List<string>() { "Error message" }
        });
 
-      SerializerAssert.AreEqual(result, (await _command.ExecuteAsync(_filter)).Errors);
+      SerializerAssert.AreEqual(result, await _command.ExecuteAsync(_filter));
 
       _mocker.Verify<IResponseCreator, FindResultResponse<PositionInfo>>(
         x => x.CreateFailureFindResponse<PositionInfo>(HttpStatusCode.BadRequest, It.IsAny<List<string>>()), Times.Once);
