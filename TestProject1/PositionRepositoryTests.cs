@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Provider;
 using LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef;
@@ -8,8 +9,12 @@ using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position.Filters;
 using LT.DigitalOffice.UnitTestKernel;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Moq.AutoMock;
+using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 
 namespace LT.DigitalOffice.PositionService.Data.UnitTests
@@ -29,6 +34,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
 
     private AutoMocker _mocker;
     private IHttpContextAccessor _contextAccessor;
+  //  private Mock<IGetPositionsRequest> _getRequest;
 
     [SetUp]
     public void SetUp()
@@ -80,6 +86,8 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       _provider.Positions.AddRange(_position3);
       _provider.PositionsUsers.AddRange(_user);
       _provider.Save();
+
+      _mocker.GetMock<IHttpContextAccessor>().Reset();
     }
 
     public void CreateMemoryDb()
@@ -110,6 +118,8 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       }
     }
 
+    #region AddPosition
+
     [Test]
     public async Task ShouldAddPositionAsync()
     {
@@ -132,6 +142,10 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       SerializerAssert.AreEqual(null, await _repository.CreateAsync(null));
     }
 
+    #endregion
+
+    #region GetPosition
+
     [Test]
     public async Task ShouldReturnPositionForIdAsync()
     {
@@ -145,47 +159,19 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     }
 
     [Test]
-    public async Task ShouldReturnListOfActivePositionsAsync()
+    public async Task GetPositionsforRequest()
     {
       List<DbPosition> positions = new List<DbPosition>() { _position1, _position2 };
-      FindPositionsFilter filter = new FindPositionsFilter()
-      {
-        SkipCount = 0,
-        TakeCount = 10,
-      };
+      List<Guid> ids = new List<Guid>() { _position1.Id, _position2.Id };
 
-      (List<DbPosition>, int) expectedResponse = (positions, 2);
-      var response = await _repository.FindAsync(filter);
+      // IGetPositionsRequest.CreateObj(usersIds: ids);
 
-      SerializerAssert.AreEqual(expectedResponse, response);
+      //_getRequest
+      //  .Setup(x => x.UsersIds)
+      //  .Returns(ids);  
+
+      // SerializerAssert.AreEqual(positions, await _repository.GetAsync(IGetPositionsRequest.CreateObj(usersIds: ids)));
     }
-
-    [Test]
-    public async Task ShouldReturnListOfAllPositionsAsync()
-    {
-      List<DbPosition> positions = new List<DbPosition> { _position1, _position2, _position3 };
-      FindPositionsFilter filter = new FindPositionsFilter()
-      {
-        IncludeDeactivated = true,
-        SkipCount = 0,
-        TakeCount = 10,
-      };
-
-      (List<DbPosition>, int) expectedResponse = (positions, 3);
-      var response = await _repository.FindAsync(filter);
-
-      SerializerAssert.AreEqual(expectedResponse, response);
-    }
-
-    //[Test]
-    //public async Task GetPositionsforRequest()
-    //{
-    //  IGetPositionsRequest request;
-
-    //  List<Guid> ids = new List<Guid>() { _position1.Id, _position2.Id };
-
-    //  SerializerAssert.AreEqual(_positions, await _repository.GetAsync());
-    //}
 
     [Test]
     public async Task ShouldReturnListPositionsForIdsAsync()
@@ -205,6 +191,48 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       SerializerAssert.AreEqual(positions, await _repository.GetAsync(ids));
     }
 
+    #endregion
+
+    #region FindPositions
+
+    [Test]
+    public async Task ShouldReturnListOfActivePositionsAsync()
+    {
+      List<DbPosition> positions = new List<DbPosition>() { _position1, _position2 };
+      FindPositionsFilter filter = new FindPositionsFilter()
+      {
+        SkipCount = 0,
+        TakeCount = 10,
+      };
+
+      (List<DbPosition>, int) expectedResponse = (positions, 2);
+      var response = await _repository.FindAsync(filter);
+
+      SerializerAssert.AreEqual(expectedResponse, response);
+    }
+
+
+    [Test]
+    public async Task ShouldReturnListOfAllPositionsAsync()
+    {
+      List<DbPosition> positions = new List<DbPosition> { _position1, _position2, _position3 };
+      FindPositionsFilter filter = new FindPositionsFilter()
+      {
+        IncludeDeactivated = true,
+        SkipCount = 0,
+        TakeCount = 10,
+      };
+
+      (List<DbPosition>, int) expectedResponse = (positions, 3);
+      var response = await _repository.FindAsync(filter);
+
+      SerializerAssert.AreEqual(expectedResponse, response);
+    }
+
+    #endregion
+
+    #region ContainsUsers
+
     [Test]
     public async Task ShouldReturnTrueForPositionsUserAsync()
     {
@@ -217,6 +245,10 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       bool response = await _repository.ContainsUsersAsync(_position1.Id);
       SerializerAssert.AreEqual(false, response);
     }
+
+    #endregion
+
+    #region ExistNamesAndPositions
 
     [Test]
     public async Task ShouldReturnTrueForNameExistAsync()
@@ -241,5 +273,62 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     {
       SerializerAssert.AreEqual(false, await _repository.DoesExistAsync(Guid.NewGuid()));
     }
+
+    #endregion
+
+    [Test]
+    public async Task ShouldSomethiiing()
+    {
+     // _contextAccessor = _mocker.CreateInstance<HttpContextAccessor>();
+      
+      //_mocker
+      //  .Setup<IHttpContextAccessor, Guid>(x => x.HttpContext)
+      //  .Returns(_creatorId);
+
+      DbPosition position3After = new DbPosition()
+      {
+        Id = _position3.Id,
+        Name = "TestName3After",
+        Description = "TestDescription3After",
+        IsActive = true,
+        CreatedAtUtc = _position3.CreatedAtUtc,
+        CreatedBy = _position3.CreatedBy,
+      };
+
+      JsonPatchDocument<DbPosition> patchPosition;
+
+      patchPosition = new JsonPatchDocument<DbPosition>(new List<Operation<DbPosition>>
+      {
+        new Operation<DbPosition>(
+          "replace",
+          $"/{nameof(DbPosition.Name)}",
+          "",
+          $"{position3After.Name}"),
+
+        new Operation<DbPosition>(
+          "replace",
+          $"/{nameof(DbPosition.Description)}",
+          "",
+          $"{position3After.Description}"),
+
+        new Operation<DbPosition>(
+          "replace",
+          $"/{nameof(DbPosition.IsActive)}",
+          "",
+          $"{position3After.IsActive}"),
+      }, new CamelCasePropertyNamesContractResolver());
+
+     // SerializerAssert.AreEqual(true, await _repository.EditAsync(_position3, patchPosition));
+
+     // var patchedPosition = _provider.Positions.FirstOrDefaultAsync(p => p.Id == _position3.Id);
+     // position3After.ModifiedAtUtc = _position3.ModifiedAtUtc;
+      //position3After.ModifiedBy = _position3.ModifiedBy;
+     // SerializerAssert.AreEqual(position3After, _position3);
+
+    }
+
+
+    //istrue,isfalse,isnull
+
   }
 }
