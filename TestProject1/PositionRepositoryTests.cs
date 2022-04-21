@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
 using System.Threading.Tasks;
-using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Provider;
 using LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef;
@@ -12,7 +9,6 @@ using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position.Filters;
 using LT.DigitalOffice.UnitTestKernel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 
@@ -24,7 +20,6 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     private IPositionRepository _repository;
     private DbContextOptions<PositionServiceDbContext> _dbContext;
 
-    private List<DbPosition> _positions;
     private DbPosition _position1;
     private DbPosition _position2;
     private DbPosition _position3;
@@ -33,7 +28,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     private DbPositionUser _user;
 
     private AutoMocker _mocker;
-    private Mock<IHttpContextAccessor> _accessorMock;
+    private IHttpContextAccessor _contextAccessor;
 
     [SetUp]
     public void SetUp()
@@ -78,8 +73,6 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         CreatedAtUtc = DateTime.UtcNow
       };
 
-      _positions = new List<DbPosition>() { _position1, _position2};
-
       CreateMemoryDb();
 
       _provider.Positions.AddRange(_position1);
@@ -91,30 +84,31 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
 
     public void CreateMemoryDb()
     {
+      _mocker = new AutoMocker();
+      _contextAccessor = _mocker.CreateInstance<HttpContextAccessor>();
       _dbContext = new DbContextOptionsBuilder<PositionServiceDbContext>()
                  .UseInMemoryDatabase(databaseName: "PositionServiceTes")
                  .Options;
 
-      _accessorMock = new();
       IDictionary<object, object> _items = new Dictionary<object, object>();
       _items.Add("UserId", _creatorId);
 
-      _accessorMock
-       .Setup(x => x.HttpContext.Items)
-       .Returns(_items);
+      _mocker
+        .Setup<IHttpContextAccessor, IDictionary<object, object>>(x => x.HttpContext.Items)
+        .Returns(_items);
 
       _provider = new PositionServiceDbContext(_dbContext);
-      _repository = new PositionRepository(_provider, _accessorMock.Object);
+      _repository = new PositionRepository(_provider, _contextAccessor);
     }
 
-    //[TearDown]
-    //public void CleanDb()
-    //{
-    //  if (_provider.IsInMemory())
-    //  {
-    //    _provider.EnsureDeleted();
-    //  }
-    //}
+    [TearDown]
+    public void CleanDb()
+    {
+      if (_provider.IsInMemory())
+      {
+        _provider.EnsureDeleted();
+      }
+    }
 
     [Test]
     public async Task ShouldAddPositionAsync()
@@ -151,11 +145,28 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     }
 
     [Test]
-    public async Task ShouldReturnListOfPositionsAsync() //?
+    public async Task ShouldReturnListOfActivePositionsAsync()
     {
-      List<DbPosition> positions = new List<DbPosition>() { _position1, _position2, _position3};
+      List<DbPosition> positions = new List<DbPosition>() { _position1, _position2 };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
+        SkipCount = 0,
+        TakeCount = 10,
+      };
+
+      (List<DbPosition>, int) expectedResponse = (positions, 2);
+      var response = await _repository.FindAsync(filter);
+
+      SerializerAssert.AreEqual(expectedResponse, response);
+    }
+
+    [Test]
+    public async Task ShouldReturnListOfAllPositionsAsync()
+    {
+      List<DbPosition> positions = new List<DbPosition> { _position1, _position2, _position3 };
+      FindPositionsFilter filter = new FindPositionsFilter()
+      {
+        IncludeDeactivated = true,
         SkipCount = 0,
         TakeCount = 10,
       };
@@ -180,45 +191,53 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     public async Task ShouldReturnListPositionsForIdsAsync()
     {
       List<Guid> ids = new List<Guid>() { _position1.Id, _position2.Id };
+      List<DbPosition> positions = new List<DbPosition>() { _position1, _position2 };
 
-      SerializerAssert.AreEqual(_positions, await _repository.GetAsync(ids));
+      SerializerAssert.AreEqual(positions, await _repository.GetAsync(ids));
     }
 
     [Test]
     public async Task ShouldReturnNullPositionsForIdsAsync()
     {
-      List<Guid> ids = new List<Guid>() {};
+      List<Guid> ids = new List<Guid>() { };
       List<DbPosition> positions = new List<DbPosition>() { };
 
       SerializerAssert.AreEqual(positions, await _repository.GetAsync(ids));
     }
 
-    public async Task ShouldReturnTrueForPositionsUserAsync() //!!
+    [Test]
+    public async Task ShouldReturnTrueForPositionsUserAsync()
     {
       SerializerAssert.AreEqual(true, await _repository.ContainsUsersAsync(_position3.Id));
     }
 
-    public async Task ShouldReturnFalseForPositionsUserAsync() //!!
+    [Test]
+    public async Task ShouldReturnFalseForPositionsUserAsync()
     {
-      SerializerAssert.AreEqual(false, await _repository.ContainsUsersAsync(_position1.Id));
+      bool response = await _repository.ContainsUsersAsync(_position1.Id);
+      SerializerAssert.AreEqual(false, response);
     }
 
-    public async Task ShouldReturnTrueForNameExistAsync() //
+    [Test]
+    public async Task ShouldReturnTrueForNameExistAsync()
     {
       SerializerAssert.AreEqual(true, await _repository.DoesNameExistAsync("TestName"));
     }
 
-    public async Task ShouldReturnFalseForNameExistAsync() //
+    [Test]
+    public async Task ShouldReturnFalseForNameExistAsync()
     {
       SerializerAssert.AreEqual(false, await _repository.DoesNameExistAsync("Test"));
     }
 
-    public async Task ShouldReturnTrueForExistAsync() // null
+    [Test]
+    public async Task ShouldReturnTrueForExistAsync()
     {
       SerializerAssert.AreEqual(true, await _repository.DoesExistAsync(_position1.Id));
     }
 
-    public async Task ShouldReturnFalseForExistAsync() // null
+    [Test]
+    public async Task ShouldReturnFalseForExistAsync()
     {
       SerializerAssert.AreEqual(false, await _repository.DoesExistAsync(Guid.NewGuid()));
     }
