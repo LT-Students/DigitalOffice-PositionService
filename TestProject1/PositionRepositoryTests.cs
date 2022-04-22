@@ -276,23 +276,25 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
 
     #endregion
 
-    [Test]
-    public async Task ShouldSomethiiing()
+    #region EditPosition
+
+   // [Test]
+    public async Task ShouldReturnPositionForEdit()
     {
-     // _contextAccessor = _mocker.CreateInstance<HttpContextAccessor>();
+      //_contextAccessor = _mocker.CreateInstance<HttpContextAccessor>();
       
       //_mocker
       //  .Setup<IHttpContextAccessor, Guid>(x => x.HttpContext)
       //  .Returns(_creatorId);
 
-      DbPosition position3After = new DbPosition()
+      DbPosition positionAfter = new DbPosition()
       {
-        Id = _position3.Id,
-        Name = "TestName3After",
-        Description = "TestDescription3After",
+        Id = _position1.Id,
+        Name = "TestNameAfter",
+        Description = "TestDescriptionAfter",
         IsActive = true,
-        CreatedAtUtc = _position3.CreatedAtUtc,
-        CreatedBy = _position3.CreatedBy,
+        CreatedAtUtc = _position1.CreatedAtUtc,
+        CreatedBy = _position1.CreatedBy,
       };
 
       JsonPatchDocument<DbPosition> patchPosition;
@@ -303,32 +305,57 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
           "replace",
           $"/{nameof(DbPosition.Name)}",
           "",
-          $"{position3After.Name}"),
+          $"{positionAfter.Name}"),
 
         new Operation<DbPosition>(
           "replace",
           $"/{nameof(DbPosition.Description)}",
           "",
-          $"{position3After.Description}"),
+          $"{positionAfter.Description}"),
 
         new Operation<DbPosition>(
           "replace",
           $"/{nameof(DbPosition.IsActive)}",
           "",
-          $"{position3After.IsActive}"),
+          $"{positionAfter.IsActive}"),
       }, new CamelCasePropertyNamesContractResolver());
 
-     // SerializerAssert.AreEqual(true, await _repository.EditAsync(_position3, patchPosition));
+      SerializerAssert.AreEqual(true, await _repository.EditAsync(_position1, patchPosition));
 
-     // var patchedPosition = _provider.Positions.FirstOrDefaultAsync(p => p.Id == _position3.Id);
-     // position3After.ModifiedAtUtc = _position3.ModifiedAtUtc;
-      //position3After.ModifiedBy = _position3.ModifiedBy;
-     // SerializerAssert.AreEqual(position3After, _position3);
-
+      positionAfter.ModifiedAtUtc = _position1.ModifiedAtUtc;
+      positionAfter.ModifiedBy = _position1.ModifiedBy;
+      SerializerAssert.AreEqual(positionAfter, _position1);
     }
 
+    [Test]
+    public async Task ShouldReturnFalseForEdit()
+    {
+      JsonPatchDocument<DbPosition> patchPosition;
 
-    //istrue,isfalse,isnull
+      patchPosition = new JsonPatchDocument<DbPosition>(new List<Operation<DbPosition>>
+      {
+        new Operation<DbPosition>(
+          "replace",
+          $"/{nameof(DbPosition.Name)}",
+          "",
+          "Test"),
 
+        new Operation<DbPosition>(
+          "replace",
+          $"/{nameof(DbPosition.Description)}",
+          "",
+          "Test"),
+
+        new Operation<DbPosition>(
+          "replace",
+          $"/{nameof(DbPosition.IsActive)}",
+          "",
+          "false"),
+      }, new CamelCasePropertyNamesContractResolver());
+
+      SerializerAssert.AreEqual(false, await _repository.EditAsync(null, patchPosition));
+    }
+
+    #endregion
   }
 }
