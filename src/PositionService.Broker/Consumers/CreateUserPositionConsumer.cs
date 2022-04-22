@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Models.Broker.Publishing.Subscriber.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
@@ -15,18 +14,14 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
     private readonly IDbPositionUserMapper _positionUserMapper;
     private readonly IGlobalCacheRepository _globalCache;
 
-    private async Task<bool> CreateAsync(ICreateUserPositionPublish request)
+    private async Task CreateAsync(ICreateUserPositionPublish request)
     {
-      if (!await _positionRepository.DoesExistAsync(request.PositionId))
+      if (await _positionRepository.DoesExistAsync(request.PositionId))
       {
-        return false;
+        await _positionUserRepository.CreateAsync(_positionUserMapper.Map(request));
+
+        await _globalCache.RemoveAsync(request.PositionId);
       }
-
-      await _positionUserRepository.CreateAsync(_positionUserMapper.Map(request));
-
-      await _globalCache.RemoveAsync(request.PositionId);
-
-      return true;
     }
 
     public CreateUserPositionConsumer(
@@ -43,9 +38,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 
     public async Task Consume(ConsumeContext<ICreateUserPositionPublish> context)
     {
-      object response = OperationResultWrapper.CreateResponse(CreateAsync, context.Message);
-
-      await context.RespondAsync<IOperationResult<bool>>(response);
+      await CreateAsync(context.Message);
     }
   }
 }
