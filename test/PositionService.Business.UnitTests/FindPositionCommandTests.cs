@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation;
 using LT.DigitalOffice.Kernel.Enums;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Kernel.Validators.Interfaces;
@@ -122,8 +120,8 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     [Test]
     public async Task ShouldReturnNullAsync()
     {
-      List<DbPosition> dblist = null;
       List<DbPosition> result = null;
+      List<DbPosition> dblist = null;
       _totalCount = 0;
 
       _mocker
@@ -139,9 +137,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     [Test]
     public async Task ShouldReturnFailedResponseWhenValidationIsFailedAsync()
     {
-      List<string> res = new List<string>() { "Error message" };
-
-      FindResultResponse<PositionInfo> result = new(      
+      FindResultResponse<PositionInfo> result = new(
         body: default,
         totalCount: 0,
         status: OperationResultStatusType.Failed,
@@ -155,19 +151,12 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
       _mocker
        .Setup<IResponseCreator, FindResultResponse<PositionInfo>>(x =>
          x.CreateFailureFindResponse<PositionInfo>(HttpStatusCode.BadRequest, It.IsAny<List<string>>()))
-       .Returns(new FindResultResponse<PositionInfo>()
-       {
-        Body = default,
-        TotalCount = 0,
-        Status = OperationResultStatusType.Failed,
-        Errors = new List<string>() { "Error message" }
-       });
+       .Returns(result);
 
       SerializerAssert.AreEqual(result, await _command.ExecuteAsync(_filter));
 
       _mocker.Verify<IResponseCreator, FindResultResponse<PositionInfo>>(
         x => x.CreateFailureFindResponse<PositionInfo>(HttpStatusCode.BadRequest, It.IsAny<List<string>>()), Times.Once);
-
       _mocker.Verify<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(It.IsAny<FindPositionsFilter>()), Times.Never);
       _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(It.IsAny<DbPosition>()), Times.Never);
     }

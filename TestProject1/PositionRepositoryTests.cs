@@ -27,14 +27,14 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
 
     private DbPosition _position1;
     private DbPosition _position2;
-    private DbPosition _position3;
+    private DbPosition _positionWithUser;
+    private DbPosition _deactivatedPosition;
     private Guid _creatorId = Guid.NewGuid();
 
     private DbPositionUser _user;
 
     private AutoMocker _mocker;
     private IHttpContextAccessor _contextAccessor;
-    private Mock<IGetPositionsRequest> _getRequest;
 
     [SetUp]
     public void SetUp()
@@ -59,12 +59,22 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         CreatedBy = _creatorId,
       };
 
-      _position3 = new DbPosition()
+      _deactivatedPosition = new DbPosition()
+      {
+        Id = Guid.NewGuid(),
+        Name = "TestName",
+        Description = "TestDescription",
+        IsActive = false,
+        CreatedAtUtc = DateTime.UtcNow,
+        CreatedBy = _creatorId,
+      };
+
+      _positionWithUser = new DbPosition()
       {
         Id = Guid.NewGuid(),
         Name = "TestName3",
         Description = "TestDescription3",
-        IsActive = false,
+        IsActive = true,
         CreatedAtUtc = DateTime.UtcNow,
         CreatedBy = _creatorId,
       };
@@ -72,7 +82,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       _user = new DbPositionUser()
       {
         Id = Guid.NewGuid(),
-        PositionId = _position3.Id,
+        PositionId = _positionWithUser.Id,
         UserId = Guid.NewGuid(),
         IsActive = true,
         CreatedBy = _creatorId,
@@ -83,7 +93,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
 
       _provider.Positions.AddRange(_position1);
       _provider.Positions.AddRange(_position2);
-      _provider.Positions.AddRange(_position3);
+      _provider.Positions.AddRange(_positionWithUser);
       _provider.PositionsUsers.AddRange(_user);
       _provider.Save();
 
@@ -152,12 +162,17 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
    // [Test]
     public async Task GetPositionsforRequest()
     {
-      List<DbPosition> positions = new List<DbPosition>() { _position1, _position2 };
-      List<Guid> ids = new List<Guid>() { _position1.Id, _position2.Id };
+      List<DbPosition> positions = new List<DbPosition>() { _positionWithUser };
+      List<Guid> ids = new List<Guid>() { _user.UserId };
 
-      // IGetPositionsRequest.CreateObj(usersIds: ids);
+      _mocker = new AutoMocker();
+      _mocker
+        .Setup<IGetPositionsRequest, List<Guid>>(x => x.UsersIds)
+        .Returns(ids);
 
-      SerializerAssert.AreEqual(positions, await _repository.GetAsync((IGetPositionsRequest)IGetPositionsRequest.CreateObj(usersIds: ids)));
+      List<DbPosition> response = await _repository.GetAsync(_mocker.GetMock<IGetPositionsRequest>().Object);
+
+      SerializerAssert.AreEqual(positions, response);
     }
 
     [Test]
@@ -194,17 +209,16 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     [Test]
     public async Task ShouldReturnListOfActivePositionsAsync()
     {
-      List<DbPosition> positions = new List<DbPosition>() { _position1, _position2 };
+      List<DbPosition> positions = new List<DbPosition>() { _position1, _position2, _positionWithUser };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
         SkipCount = 0,
         TakeCount = 10,
       };
 
-      (List<DbPosition>, int) expectedResponse = (positions, 2);
-      var response = await _repository.FindAsync(filter);
+      (List<DbPosition>, int) expectedResponse = (positions, 3);
 
-      SerializerAssert.AreEqual(expectedResponse, response);
+      SerializerAssert.AreEqual(expectedResponse, await _repository.FindAsync(filter));
     }
 
     [Test]
@@ -226,7 +240,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     [Test]
     public async Task ShouldReturnListOfAllPositionsAsync()
     {
-      List<DbPosition> positions = new List<DbPosition> { _position1, _position2, _position3 };
+      List<DbPosition> positions = new List<DbPosition> { _position1, _position2, _positionWithUser, _deactivatedPosition };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
         IncludeDeactivated = true,
@@ -234,7 +248,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         TakeCount = 10,
       };
 
-      (List<DbPosition>, int) expectedResponse = (positions, 3);
+      (List<DbPosition>, int) expectedResponse = (positions, 4);
       var response = await _repository.FindAsync(filter);
 
       SerializerAssert.AreEqual(expectedResponse, response);
@@ -247,7 +261,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     [Test]
     public async Task ShouldReturnTrueForPositionsUserAsync()
     {
-      SerializerAssert.AreEqual(true, await _repository.ContainsUsersAsync(_position3.Id));
+      SerializerAssert.AreEqual(true, await _repository.ContainsUsersAsync(_positionWithUser.Id));
     }
 
     [Test]
