@@ -93,6 +93,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
 
       _provider.Positions.AddRange(_position1);
       _provider.Positions.AddRange(_position2);
+      _provider.Positions.AddRange(_deactivatedPosition);
       _provider.Positions.AddRange(_positionWithUser);
       _provider.PositionsUsers.AddRange(_user);
       _provider.Save();
@@ -159,10 +160,9 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       SerializerAssert.AreEqual(null, await _repository.GetAsync(Guid.NewGuid()));
     }
 
-   // [Test]
+    [Test]
     public async Task GetPositionsforRequest()
     {
-      List<DbPosition> positions = new List<DbPosition>() { _positionWithUser };
       List<Guid> ids = new List<Guid>() { _user.UserId };
 
       _mocker = new AutoMocker();
@@ -170,9 +170,11 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         .Setup<IGetPositionsRequest, List<Guid>>(x => x.UsersIds)
         .Returns(ids);
 
+      
+      List<DbPosition> expectedResponse = new List<DbPosition>() { _positionWithUser };
       List<DbPosition> response = await _repository.GetAsync(_mocker.GetMock<IGetPositionsRequest>().Object);
 
-      SerializerAssert.AreEqual(positions, response);
+      SerializerAssert.ReferenceEquals(expectedResponse, response);
     }
 
     [Test]
