@@ -157,10 +157,6 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
 
       // IGetPositionsRequest.CreateObj(usersIds: ids);
 
-      //_getRequest
-      //  .Setup()
-      //  .Returns(ids);  
-
       SerializerAssert.AreEqual(positions, await _repository.GetAsync((IGetPositionsRequest)IGetPositionsRequest.CreateObj(usersIds: ids)));
     }
 
@@ -293,14 +289,18 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
 
     #region EditPosition
 
-   // [Test]
+    [Test]
     public async Task ShouldReturnPositionForEdit()
     {
-      _contextAccessor = _mocker.CreateInstance<HttpContextAccessor>();
+      _mocker = new AutoMocker();
+      _repository = _mocker.CreateInstance<PositionRepository>();
       
-      //_mocker
-      //  .Setup<IHttpContextAccessor, Guid>()
-      //  .Returns(_creatorId);
+      IDictionary<object, object> _items = new Dictionary<object, object>();
+      _items.Add("UserId", _creatorId);
+
+      _mocker
+        .Setup<IHttpContextAccessor, IDictionary<object, object>>(x => x.HttpContext.Items)
+        .Returns(_items);
 
       DbPosition positionAfter = new DbPosition()
       {
