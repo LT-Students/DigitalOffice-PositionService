@@ -29,6 +29,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     private DbPosition _position2;
     private DbPosition _positionWithUser;
     private DbPosition _deactivatedPosition;
+    private DbPosition _deactivatedPosition2;
     private Guid _creatorId = Guid.NewGuid();
 
     private DbPositionUser _user;
@@ -77,6 +78,16 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         IsActive = true,
         CreatedBy = _creatorId,
         CreatedAtUtc = DateTime.UtcNow,
+      };
+
+      _deactivatedPosition = new DbPosition()
+      {
+        Id = Guid.NewGuid(),
+        Name = "TestName5",
+        Description = "TestDescription5",
+        IsActive = false,
+        CreatedAtUtc = DateTime.UtcNow,
+        CreatedBy = _creatorId,
       };
 
       _user = new DbPositionUser()
@@ -225,7 +236,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     [Test]
     public async Task ShouldReturnInactivePositionsAsync()
     {
-      List<DbPosition> positions = new List<DbPosition>() { _deactivatedPosition };
+      List<DbPosition> positions = new List<DbPosition>() { _deactivatedPosition, _deactivatedPosition2 };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
         IsActive = false,
@@ -233,7 +244,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         TakeCount = 10,
       };
 
-      (List<DbPosition>, int) expectedResponse = (positions, 1);
+      (List<DbPosition>, int) expectedResponse = (positions, 2);
 
       SerializerAssert.AreEqual(expectedResponse, await _repository.FindAsync(filter));
     }
@@ -241,14 +252,14 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     [Test]
     public async Task ShouldReturnListOfAllPositionsAsync()
     {
-      List<DbPosition> positions = new List<DbPosition> { _position1, _position2, _positionWithUser, _deactivatedPosition };
+      List<DbPosition> positions = new List<DbPosition> { _position1, _position2, _positionWithUser, _deactivatedPosition, _deactivatedPosition2 };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
         SkipCount = 0,
         TakeCount = 10,
       };
 
-      (List<DbPosition>, int) expectedResponse = (positions, 4);
+      (List<DbPosition>, int) expectedResponse = (positions, 5);
       var response = await _repository.FindAsync(filter);
 
       SerializerAssert.AreEqual(expectedResponse, response);
@@ -257,7 +268,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     [Test]
     public async Task ShouldReturnListOfSortAllPositionsAsync()
     {
-      List<DbPosition> positions = new List<DbPosition>() { _position1, _position2, _deactivatedPosition, _positionWithUser };
+      List<DbPosition> positions = new List<DbPosition>() { _position1, _position2, _deactivatedPosition, _positionWithUser, _deactivatedPosition2 };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
         IsAscendingSort = true,
@@ -265,7 +276,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         TakeCount = 10,
       };
 
-      (List<DbPosition>, int) expectedResponse = (positions, 4);
+      (List<DbPosition>, int) expectedResponse = (positions, 5);
 
       SerializerAssert.AreEqual(expectedResponse, await _repository.FindAsync(filter));
     }
@@ -273,7 +284,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     [Test]
     public async Task ShouldReturnListOfDescendingSortAllPositionsAsync()
     {
-      List<DbPosition> positions = new List<DbPosition>() { _positionWithUser, _deactivatedPosition, _position2, _position1 };
+      List<DbPosition> positions = new List<DbPosition>() { _deactivatedPosition2, _positionWithUser, _deactivatedPosition, _position2, _position1 };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
         IsAscendingSort = false,
@@ -281,7 +292,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         TakeCount = 10,
       };
 
-      (List<DbPosition>, int) expectedResponse = (positions, 4);
+      (List<DbPosition>, int) expectedResponse = (positions, 5);
 
       SerializerAssert.AreEqual(expectedResponse, await _repository.FindAsync(filter));
     }
@@ -315,6 +326,40 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       };
 
       (List<DbPosition>, int) expectedResponse = (positions, 3);
+
+      SerializerAssert.AreEqual(expectedResponse, await _repository.FindAsync(filter));
+    }
+
+    [Test]
+    public async Task ShouldReturnListOfSortInactivePositionsAsync()
+    {
+      List<DbPosition> positions = new List<DbPosition>() { _deactivatedPosition, _deactivatedPosition2 };
+      FindPositionsFilter filter = new FindPositionsFilter()
+      {
+        IsAscendingSort = true,
+        IsActive = false,
+        SkipCount = 0,
+        TakeCount = 10,
+      };
+
+      (List<DbPosition>, int) expectedResponse = (positions, 2);
+
+      SerializerAssert.AreEqual(expectedResponse, await _repository.FindAsync(filter));
+    }
+
+    [Test]
+    public async Task ShouldReturnListOfDescendingSortInactivePositionsAsync()
+    {
+      List<DbPosition> positions = new List<DbPosition>() { _deactivatedPosition2, _deactivatedPosition };
+      FindPositionsFilter filter = new FindPositionsFilter()
+      {
+        IsAscendingSort = false,
+        IsActive = false,
+        SkipCount = 0,
+        TakeCount = 10,
+      };
+
+      (List<DbPosition>, int) expectedResponse = (positions, 2);
 
       SerializerAssert.AreEqual(expectedResponse, await _repository.FindAsync(filter));
     }
