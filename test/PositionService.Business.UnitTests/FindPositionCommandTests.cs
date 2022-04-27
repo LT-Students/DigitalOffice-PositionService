@@ -68,7 +68,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
           IsActive = true,
           CreatedBy = Guid.NewGuid(),
           CreatedAtUtc = DateTime.UtcNow,
-        }
+        },
       };
 
       _totalCount = 3;
@@ -110,6 +110,102 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
         .Returns(_positionInfo[0])
         .Returns(_positionInfo[1])
         .Returns(_positionInfo[2]);
+
+      SerializerAssert.AreEqual(result, (await _command.ExecuteAsync(_filter)).Body);
+
+      _mocker.Verify<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(It.IsAny<FindPositionsFilter>()), Times.Once);
+      _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(It.IsAny<DbPosition>()), Times.Exactly(3));
+    }
+
+    [Test]
+    public async Task ShouldReturnListOfInactivePositionInfoAsync()
+    {
+      Guid positionId = Guid.NewGuid();
+      List<PositionInfo> result = new List<PositionInfo> {
+      new PositionInfo()
+      {
+        Id = positionId,
+        Name = "InactiveTestName",
+        Description = "InactiveTestDescription",
+        IsActive = false,
+      }};
+
+      List<DbPosition> position = new List<DbPosition> { new DbPosition() 
+      {
+        Id = positionId,
+        Name = "InactiveTestName",
+        Description = "InactiveTestDescription",
+        IsActive = false,
+        CreatedBy = Guid.NewGuid(),
+        CreatedAtUtc = DateTime.UtcNow,
+      } };
+
+      int totalCount = 1;
+
+      _filter = new FindPositionsFilter()
+      {
+        IsActive = false,
+      };
+
+      _mocker
+        .Setup<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(_filter))
+        .ReturnsAsync((position, totalCount));
+
+      _mocker
+        .Setup<IPositionInfoMapper, PositionInfo>(x => x.Map(It.IsAny<DbPosition>()))
+        .Returns(result[0]);
+
+      SerializerAssert.AreEqual(result, (await _command.ExecuteAsync(_filter)).Body);
+
+      _mocker.Verify<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(It.IsAny<FindPositionsFilter>()), Times.Once);
+      _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(It.IsAny<DbPosition>()), Times.Once);
+    }
+
+    [Test]
+    public async Task ShouldReturnListSortPositionInfoAsync()
+    {
+      var result = _positionInfo;
+      _filter = new FindPositionsFilter()
+      {
+        IsActive = true,
+        IsAscendingSort = true,
+      };
+
+      _mocker
+        .Setup<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(_filter))
+        .ReturnsAsync((_dbPositions, _totalCount));
+
+      _mocker
+        .SetupSequence<IPositionInfoMapper, PositionInfo>(x => x.Map(It.IsAny<DbPosition>()))
+        .Returns(_positionInfo[0])
+        .Returns(_positionInfo[1])
+        .Returns(_positionInfo[2]);
+
+      SerializerAssert.AreEqual(result, (await _command.ExecuteAsync(_filter)).Body);
+
+      _mocker.Verify<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(It.IsAny<FindPositionsFilter>()), Times.Once);
+      _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(It.IsAny<DbPosition>()), Times.Exactly(3));
+    }
+
+    [Test]
+    public async Task ShouldReturnListDescendingSortPositionInfoAsync()
+    {
+      List<PositionInfo> result = new List<PositionInfo>() { _positionInfo[2], _positionInfo[1], _positionInfo[0] };
+      _filter = new FindPositionsFilter()
+      {
+        IsActive = true,
+        IsAscendingSort = false,
+      };
+
+      _mocker
+        .Setup<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(_filter))
+        .ReturnsAsync((_dbPositions, _totalCount));
+
+      _mocker
+        .SetupSequence<IPositionInfoMapper, PositionInfo>(x => x.Map(It.IsAny<DbPosition>()))
+        .Returns(_positionInfo[2])
+        .Returns(_positionInfo[1])
+        .Returns(_positionInfo[0]);
 
       SerializerAssert.AreEqual(result, (await _command.ExecuteAsync(_filter)).Body);
 

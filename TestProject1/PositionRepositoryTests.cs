@@ -245,7 +245,6 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       List<DbPosition> positions = new List<DbPosition> { _position1, _position2, _positionWithUser, _deactivatedPosition };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
-        IncludeDeactivated = true,
         SkipCount = 0,
         TakeCount = 10,
       };
