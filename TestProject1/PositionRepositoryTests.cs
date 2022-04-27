@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
@@ -75,8 +77,8 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         Name = "TestName3",
         Description = "TestDescription3",
         IsActive = true,
-        CreatedAtUtc = DateTime.UtcNow,
         CreatedBy = _creatorId,
+        CreatedAtUtc = DateTime.UtcNow,
       };
 
       _user = new DbPositionUser()
@@ -161,7 +163,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     }
 
     [Test]
-    public async Task GetPositionsforRequest()
+    public async Task ShouldReturnPositionsforRequest()
     {
       List<Guid> ids = new List<Guid>() { _user.UserId };
 
@@ -169,12 +171,10 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       _mocker
         .Setup<IGetPositionsRequest, List<Guid>>(x => x.UsersIds)
         .Returns(ids);
-
       
       List<DbPosition> expectedResponse = new List<DbPosition>() { _positionWithUser };
-      List<DbPosition> response = await _repository.GetAsync(_mocker.GetMock<IGetPositionsRequest>().Object);
 
-      SerializerAssert.ReferenceEquals(expectedResponse, response);
+      Assert.AreEqual(expectedResponse, await _repository.GetAsync(_mocker.GetMock<IGetPositionsRequest>().Object));
     }
 
     [Test]
