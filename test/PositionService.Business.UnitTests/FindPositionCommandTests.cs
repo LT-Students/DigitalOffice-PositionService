@@ -121,24 +121,29 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     public async Task ShouldReturnListOfInactivePositionInfoAsync()
     {
       Guid positionId = Guid.NewGuid();
-      List<PositionInfo> result = new List<PositionInfo> {
-      new PositionInfo()
+      List<PositionInfo> result = new List<PositionInfo>
       {
-        Id = positionId,
-        Name = "InactiveTestName",
-        Description = "InactiveTestDescription",
-        IsActive = false,
-      }};
+        new PositionInfo()
+        {
+          Id = positionId,
+          Name = "InactiveTestName",
+          Description = "InactiveTestDescription",
+          IsActive = false,
+        }
+      };
 
-      List<DbPosition> position = new List<DbPosition> { new DbPosition() 
+      List<DbPosition> position = new List<DbPosition>
       {
-        Id = positionId,
-        Name = "InactiveTestName",
-        Description = "InactiveTestDescription",
-        IsActive = false,
-        CreatedBy = Guid.NewGuid(),
-        CreatedAtUtc = DateTime.UtcNow,
-      } };
+        new DbPosition()
+        {
+          Id = positionId,
+          Name = "InactiveTestName",
+          Description = "InactiveTestDescription",
+          IsActive = false,
+          CreatedBy = Guid.NewGuid(),
+          CreatedAtUtc = DateTime.UtcNow,
+        }
+      };
 
       int totalCount = 1;
 
