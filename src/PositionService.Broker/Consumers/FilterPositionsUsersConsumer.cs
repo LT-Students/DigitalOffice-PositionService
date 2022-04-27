@@ -1,19 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
+using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
+using LT.DigitalOffice.Kernel.RedisSupport.Constants;
+using LT.DigitalOffice.Kernel.RedisSupport.Extensions;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Models.Broker.Models.Position;
 using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.Models.Broker.Responses.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Db;
 using MassTransit;
+using Microsoft.Extensions.Options;
 
 namespace LT.DigitalOffice.PositionService.Broker.Consumers
 {
   public class FilterPositionsUsersConsumer : IConsumer<IFilterPositionsRequest>
   {
     private readonly IPositionRepository _repository;
+    private readonly IOptions<RedisConfig> _redisConfig;
+    private readonly IGlobalCacheRepository _globalCache;
 
     public async Task<List<PositionFilteredData>> GetPositionFilteredData(IFilterPositionsRequest request)
     {
@@ -28,9 +36,13 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
     }
 
     public FilterPositionsUsersConsumer(
-      IPositionRepository repository)
+      IPositionRepository repository,
+      IOptions<RedisConfig> redisConfig,
+      IGlobalCacheRepository globalCache)
     {
       _repository = repository;
+      _redisConfig = redisConfig;
+      _globalCache = globalCache;
     }
 
     public async Task Consume(ConsumeContext<IFilterPositionsRequest> context)
@@ -39,6 +51,18 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 
       await context.RespondAsync<IOperationResult<IFilterPositionsResponse>>(
         OperationResultWrapper.CreateResponse((_) => IFilterPositionsResponse.CreateObj(positionFilteredData), context));
+
+      if (positionFilteredData is not null)
+      {
+        string key = context.Message.PositionsIds.GetRedisCacheHashCode();
+
+        await _globalCache.CreateAsync(
+          Cache.Positions,
+          key,
+          positionFilteredData,
+          context.Message.PositionsIds,
+          TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
+      }
     }
   }
 }
