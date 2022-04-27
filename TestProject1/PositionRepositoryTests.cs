@@ -80,7 +80,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         CreatedAtUtc = DateTime.UtcNow,
       };
 
-      _deactivatedPosition = new DbPosition()
+      _deactivatedPosition2 = new DbPosition()
       {
         Id = Guid.NewGuid(),
         Name = "TestName5",
