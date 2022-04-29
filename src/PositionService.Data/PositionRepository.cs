@@ -57,8 +57,8 @@ namespace LT.DigitalOffice.PositionService.Data
       if (filter.IsAscendingSort.HasValue)
       {
         dbPositions = filter.IsAscendingSort.Value
-        ? dbPositions.OrderBy(o => o.Name)
-        : dbPositions.OrderByDescending(o => o.Name);
+          ? dbPositions.OrderBy(o => o.Name)
+          : dbPositions.OrderByDescending(o => o.Name);
       }
 
       return (await dbPositions.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbPositions.CountAsync());
