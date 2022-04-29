@@ -183,7 +183,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
 
       List<DbPosition> expectedResponse = new List<DbPosition>() { _positionWithUser };
 
-      Assert.AreEqual(expectedResponse, await _repository.GetAsync(_mocker.GetMock<IGetPositionsRequest>().Object));
+      SerializerAssert.AreEqual(expectedResponse, await _repository.GetAsync(_mocker.GetMock<IGetPositionsRequest>().Object));
     }
 
     [Test]

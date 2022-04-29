@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,6 +18,7 @@ namespace LT.DigitalOffice.PositionService.Models.Db
     public Guid? ModifiedBy { get; set; }
     public DateTime? ModifiedAtUtc { get; set; }
 
+    [JsonIgnore]
     public DbPosition Position { get; set; }
   }
 
