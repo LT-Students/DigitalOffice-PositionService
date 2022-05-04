@@ -27,7 +27,7 @@
     <PackageReference Include="LT.DigitalOffice.Kernel.RedisSupport" Version="1.0.4" />
     <PackageReference Include="LT.DigitalOffice.Kernel.BrokerSupport" Version="1.0.1" />
     <PackageReference Include="LT.DigitalOffice.Kernel.ImageSupport" Version="1.0.1" />
-    <PackageReference Include="LT.DigitalOffice.Models" Version="1.0.81" />
+    <PackageReference Include="LT.DigitalOffice.Models" Version="1.0.83" />
   </ItemGroup>
 
   <ItemGroup Condition="($(AssemblyName.Contains('.Provider')) Or $(AssemblyName.Contains('.Models.Db'))) And $(AssemblyName.Contains('.UnitTests')) != 'true'">
