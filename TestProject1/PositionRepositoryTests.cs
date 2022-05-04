@@ -380,6 +380,40 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       SerializerAssert.AreEqual(expectedResponse, response);
     }
 
+    [Test]
+    public async Task ShouldReturnPositionWithIncludeSubstringAsync()
+    {
+      List<DbPosition> positions = new List<DbPosition>() { _position1 };
+      FindPositionsFilter filter = new FindPositionsFilter()
+      {
+        NameIncludeSubstring = "Name1",
+        SkipCount = 0,
+        TakeCount = 10,
+      };
+
+      (List<DbPosition>, int) expectedResponse = (positions, 1);
+      var response = await _repository.FindAsync(filter);
+
+      SerializerAssert.AreEqual(expectedResponse, response);
+    }
+
+    [Test]
+    public async Task ShouldReturnNullWithIncludeSubstringAsync()
+    {
+      List<DbPosition> positions = new List<DbPosition>() {};
+      FindPositionsFilter filter = new FindPositionsFilter()
+      {
+        NameIncludeSubstring = "Anything",
+        SkipCount = 0,
+        TakeCount = 10,
+      };
+
+      (List<DbPosition>, int) expectedResponse = (positions, 0);
+      var response = await _repository.FindAsync(filter);
+
+      SerializerAssert.AreEqual(expectedResponse, response);
+    }
+
     #endregion
 
     #region ContainsUsers

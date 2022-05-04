@@ -61,6 +61,11 @@ namespace LT.DigitalOffice.PositionService.Data
           : dbPositions.OrderByDescending(o => o.Name);
       }
 
+      if (!string.IsNullOrWhiteSpace(filter.NameIncludeSubstring))
+      {
+        dbPositions = dbPositions.Where(d => d.Name.ToLower().Contains(filter.NameIncludeSubstring.ToLower()));
+      }
+
       return (await dbPositions.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbPositions.CountAsync());
     }
 
