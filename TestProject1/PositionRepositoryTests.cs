@@ -40,6 +40,17 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
     [SetUp]
     public void SetUp()
     {
+      CreatePositions();
+
+      CreateMemoryDb();
+
+      SavePositions();
+
+      _mocker.GetMock<IHttpContextAccessor>().Reset();
+    }
+
+    private void CreatePositions()
+    {
       _position1 = new DbPosition()
       {
         Id = Guid.NewGuid(),
@@ -99,17 +110,6 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         CreatedBy = _creatorId,
         CreatedAtUtc = DateTime.UtcNow
       };
-
-      CreateMemoryDb();
-
-      _provider.Positions.AddRange(_position1);
-      _provider.Positions.AddRange(_position2);
-      _provider.Positions.AddRange(_deactivatedPosition);
-      _provider.Positions.AddRange(_positionWithUser);
-      _provider.PositionsUsers.AddRange(_user);
-      _provider.Save();
-
-      _mocker.GetMock<IHttpContextAccessor>().Reset();
     }
 
     public void CreateMemoryDb()
@@ -117,8 +117,8 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       _mocker = new AutoMocker();
       _contextAccessor = _mocker.CreateInstance<HttpContextAccessor>();
       _dbContext = new DbContextOptionsBuilder<PositionServiceDbContext>()
-                 .UseInMemoryDatabase(databaseName: "PositionServiceTes")
-                 .Options;
+        .UseInMemoryDatabase(databaseName: "PositionServiceTes")
+        .Options;
 
       IDictionary<object, object> _items = new Dictionary<object, object>();
       _items.Add("UserId", _creatorId);
@@ -131,12 +131,22 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       _repository = new PositionRepository(_provider, _contextAccessor);
     }
 
+    public void SavePositions()
+    {
+      _provider.Positions.AddRange(_position1);
+      _provider.Positions.AddRange(_position2);
+      _provider.Positions.AddRange(_deactivatedPosition);
+      _provider.Positions.AddRange(_positionWithUser);
+      _provider.PositionsUsers.AddRange(_user);
+      _provider.Save();
+    }
+
     #region AddPosition
 
     [Test]
     public async Task ShouldAddPositionAsync()
     {
-      DbPosition position = new DbPosition()
+      DbPosition position = new DbPosition
       {
         Id = Guid.NewGuid(),
         Name = "TestName",
