@@ -190,8 +190,6 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     [Test]
     public async Task ShouldReturnListDescendingSortPositionInfoAsync()
     {
-      int totalCount = 3;
-
       List<PositionInfo> result = new List<PositionInfo>() { _positionInfo[2], _positionInfo[1], _positionInfo[0] };
       _filter = new FindPositionsFilter()
       {
@@ -201,7 +199,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
 
       _mocker
         .Setup<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(_filter))
-        .ReturnsAsync((_dbPositions, totalCount));
+        .ReturnsAsync((_dbPositions, _dbPositions.Count));
 
       _mocker
         .SetupSequence<IPositionInfoMapper, PositionInfo>(x => x.Map(It.IsAny<DbPosition>()))
