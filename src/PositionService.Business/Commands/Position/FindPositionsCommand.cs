@@ -48,7 +48,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
       return new()
       {
         Status = OperationResultStatusType.FullSuccess,
-        Body = positions.Select(_mapper.Map).ToList(),
+        Body = positions?.Select(_mapper.Map).ToList(),
         TotalCount = totalCount
       };
     }

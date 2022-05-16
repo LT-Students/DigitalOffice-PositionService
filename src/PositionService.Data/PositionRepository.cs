@@ -49,9 +49,21 @@ namespace LT.DigitalOffice.PositionService.Data
     {
       IQueryable<DbPosition> dbPositions = _provider.Positions.AsQueryable();
 
-      if (!filter.IncludeDeactivated)
+      if (filter.IsActive.HasValue)
       {
-        dbPositions = dbPositions.Where(p => p.IsActive);
+        dbPositions = dbPositions.Where(x => x.IsActive == filter.IsActive);
+      }
+
+      if (filter.IsAscendingSort.HasValue)
+      {
+        dbPositions = filter.IsAscendingSort.Value
+          ? dbPositions.OrderBy(o => o.Name)
+          : dbPositions.OrderByDescending(o => o.Name);
+      }
+
+      if (!string.IsNullOrWhiteSpace(filter.NameIncludeSubstring))
+      {
+        dbPositions = dbPositions.Where(d => d.Name.ToLower().Contains(filter.NameIncludeSubstring.ToLower()));
       }
 
       return (await dbPositions.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbPositions.CountAsync());
@@ -64,7 +76,7 @@ namespace LT.DigitalOffice.PositionService.Data
       if (request.UsersIds is not null && request.UsersIds.Any())
       {
         dbPosition = dbPosition
-          .Where(d => 
+          .Where(d =>
             d.IsActive
             && d.Users.Any(du => du.IsActive && request.UsersIds.Contains(du.UserId)));
       }
