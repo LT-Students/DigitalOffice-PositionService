@@ -146,7 +146,7 @@ namespace LT.DigitalOffice.PositionService
         .GetSection(BaseServiceInfoConfig.SectionName)
         .Get<BaseServiceInfoConfig>();
 
-      Version = "1.0.1.1";
+      Version = "1.0.1.2";
       Description = "PositionService is an API that intended to work with position.";
       StartTime = DateTime.UtcNow;
       ApiName = $"LT Digital Office - {_serviceInfoConfig.Name}";
