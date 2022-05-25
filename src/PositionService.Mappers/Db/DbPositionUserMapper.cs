@@ -30,8 +30,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
         UserId = request.UserId,
         PositionId = request.PositionId,
         IsActive = true,
-        CreatedBy = request.CreatedBy,
-        CreatedAtUtc = DateTime.UtcNow
+        CreatedBy = request.CreatedBy
       };
     }
 
@@ -48,8 +47,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
         UserId = request.UserId,
         PositionId = request.PositionId.Value,
         IsActive = true,
-        CreatedBy = _httpContextAccessor.HttpContext.GetUserId(),
-        CreatedAtUtc = DateTime.UtcNow
+        CreatedBy = _httpContextAccessor.HttpContext.GetUserId()
       };
     }
   }
