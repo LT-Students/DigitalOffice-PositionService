@@ -15,6 +15,8 @@ namespace LT.DigitalOffice.PositionService.Data.Interfaces
 
     Task<List<DbPositionUser>> GetAsync(List<Guid> userIds);
 
-    Task<Guid?> RemoveAsync(Guid userId, Guid removedBy);
+    Task<Guid?> UpdateAsync(Guid userId, Guid? positionId);
+
+    Task<bool> DoesExistAsync(Guid userId);
   }
 }
