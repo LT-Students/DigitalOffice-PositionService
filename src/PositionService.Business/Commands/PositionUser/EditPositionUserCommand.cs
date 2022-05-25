@@ -6,7 +6,6 @@ using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Enums;
-using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
@@ -72,12 +71,9 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
           validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
       OperationResultResponse<bool> response = new();
-
-      await _repository.RemoveAsync(request.UserId, _httpContextAccessor.HttpContext.GetUserId());
-
-      response.Body = request.PositionId.HasValue
-        ? (await _repository.CreateAsync(_mapper.Map(request))).HasValue
-        : true;
+      response.Body = await _repository.DoesExistAsync(request.UserId)
+        ? (await _repository.UpdateAsync(request.UserId, request.PositionId)).HasValue
+        : false;
 
       if (response.Body)
       {
