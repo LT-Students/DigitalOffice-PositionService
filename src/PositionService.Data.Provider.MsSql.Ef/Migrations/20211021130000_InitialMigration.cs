@@ -54,7 +54,7 @@ namespace LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef.Migrations
         },
         constraints: table =>
         {
-          table.PrimaryKey("PK_PositionUsers", p => p.Id);
+          table.PrimaryKey("PK_PositionsUsers", p => p.Id);
         })
         .Annotation("SqlServer:IsTemporal", true)
         .Annotation("SqlServer:TemporalHistoryTableName", DbPositionUser.HistoryTableName)

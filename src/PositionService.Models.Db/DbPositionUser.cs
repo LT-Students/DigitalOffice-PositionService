@@ -7,7 +7,7 @@ namespace LT.DigitalOffice.PositionService.Models.Db
 {
   public class DbPositionUser
   {
-    public const string TableName = "PositionUsers";
+    public const string TableName = "PositionsUsers";
     public const string HistoryTableName = "PositionUsersHistory";
 
     public Guid Id { get; set; }
