@@ -47,38 +47,45 @@ namespace LT.DigitalOffice.PositionService.Data
         .ToListAsync();
     }
 
-    public async Task<Guid?> UpdateAsync(Guid userId, Guid? positionId)
+    public async Task<Guid?> EditAsync(Guid userId, Guid? positionId)
     {
-      DbPositionUser positionUser = await _provider.PositionsUsers
+      DbPositionUser dbPositionUser = await _provider.PositionsUsers
         .FirstOrDefaultAsync(u => u.UserId == userId);
 
-      if (positionUser == null)
+      if (dbPositionUser == null || !positionId.HasValue)
       {
         return null;
       }
 
-      if (!positionUser.IsActive)
+      if (!dbPositionUser.IsActive)
       {
-        if (positionId.HasValue)
-        {
-          positionUser.PositionId = positionId.Value;
-          positionUser.IsActive = true;
-        }
+        dbPositionUser.PositionId = positionId.Value;
+        dbPositionUser.IsActive = true;
       }
       else
       {
-        if (positionId.HasValue)
-        {
-          positionUser.PositionId = positionId.Value;
-        }
-        else
-        {
-          positionUser.IsActive = false;
-        }
+        dbPositionUser.PositionId = positionId.Value;
       }
 
       await _provider.SaveAsync();
-      return positionUser.PositionId;
+      return dbPositionUser.PositionId;
+    }
+
+    public async Task<Guid?> RemoveAsync(Guid userId, Guid removedBy)
+    {
+      DbPositionUser dbPositionUser = await _provider.PositionsUsers
+        .FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
+
+      if (dbPositionUser is null)
+      {
+        return null;
+      }
+
+      dbPositionUser.IsActive = false;
+      dbPositionUser.CreatedBy = removedBy;
+      await _provider.SaveAsync();
+
+      return dbPositionUser.PositionId;
     }
 
     public async Task<bool> DoesExistAsync(Guid userId)
