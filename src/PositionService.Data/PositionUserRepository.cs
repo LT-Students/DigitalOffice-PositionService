@@ -52,19 +52,19 @@ namespace LT.DigitalOffice.PositionService.Data
       DbPositionUser dbPositionUser = await _provider.PositionsUsers
         .FirstOrDefaultAsync(u => u.UserId == userId);
 
-      if (dbPositionUser == null || !positionId.HasValue)
+      if (dbPositionUser == null)
       {
         return null;
       }
 
       if (!dbPositionUser.IsActive)
       {
-        dbPositionUser.PositionId = positionId.Value;
+        dbPositionUser.PositionId = positionId;
         dbPositionUser.IsActive = true;
       }
       else
       {
-        dbPositionUser.PositionId = positionId.Value;
+        dbPositionUser.PositionId = positionId;
       }
 
       await _provider.SaveAsync();
