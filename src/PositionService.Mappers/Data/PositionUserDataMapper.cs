@@ -13,7 +13,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Data
       {
         return null;
       }
-
+      //TODO: fix it
       return new(user.UserId, DateTime.Now);
     }
   }

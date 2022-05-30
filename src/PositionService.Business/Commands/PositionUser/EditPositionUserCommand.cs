@@ -75,7 +75,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
       if (await _repository.DoesExistAsync(request.UserId))
       {
         response.Body = request.PositionId.HasValue
-          ? (await _repository.EditAsync(request.UserId, request.PositionId)).HasValue
+          ? (await _repository.EditAsync(request.UserId, request.PositionId.Value)).HasValue
           : (await _repository.RemoveAsync(request.UserId, _httpContextAccessor.HttpContext.GetUserId())).HasValue;
       }
       else

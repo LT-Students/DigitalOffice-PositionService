@@ -47,7 +47,7 @@ namespace LT.DigitalOffice.PositionService.Data
         .ToListAsync();
     }
 
-    public async Task<Guid?> EditAsync(Guid userId, Guid? positionId)
+    public async Task<Guid?> EditAsync(Guid userId, Guid positionId)
     {
       DbPositionUser dbPositionUser = await _provider.PositionsUsers
         .FirstOrDefaultAsync(u => u.UserId == userId);
