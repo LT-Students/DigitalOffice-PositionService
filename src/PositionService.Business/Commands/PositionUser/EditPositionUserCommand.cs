@@ -80,6 +80,11 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
       }
       else
       {
+        if (!request.PositionId.HasValue)
+        {
+          return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest);
+        }
+
         response.Body = (await _repository.CreateAsync(_mapper.Map(request))).HasValue;
       }
 
