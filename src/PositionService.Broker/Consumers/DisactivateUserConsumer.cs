@@ -22,7 +22,8 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 
     public async Task Consume(ConsumeContext<IDisactivateUserPublish> context)
     {
-      Guid? positionId = await _positionUserRepository.RemoveAsync(context.Message.UserId, context.Message.ModifiedBy);
+      Guid? positionId = await _positionUserRepository
+        .RemoveAsync(context.Message.UserId, context.Message.ModifiedBy);
 
       if (positionId.HasValue)
       {

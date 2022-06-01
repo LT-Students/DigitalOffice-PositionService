@@ -107,8 +107,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         PositionId = _positionWithUser.Id,
         UserId = Guid.NewGuid(),
         IsActive = true,
-        CreatedBy = _creatorId,
-        CreatedAtUtc = DateTime.UtcNow
+        CreatedBy = _creatorId
       };
     }
 

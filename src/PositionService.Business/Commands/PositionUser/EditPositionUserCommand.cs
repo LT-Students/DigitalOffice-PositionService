@@ -72,12 +72,21 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
           validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
       OperationResultResponse<bool> response = new();
+      if (await _repository.DoesExistAsync(request.UserId))
+      {
+        response.Body = request.PositionId.HasValue
+          ? (await _repository.EditAsync(request.UserId, request.PositionId.Value)).HasValue
+          : (await _repository.RemoveAsync(request.UserId, _httpContextAccessor.HttpContext.GetUserId())).HasValue;
+      }
+      else
+      {
+        if (!request.PositionId.HasValue)
+        {
+          return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest);
+        }
 
-      await _repository.RemoveAsync(request.UserId, _httpContextAccessor.HttpContext.GetUserId());
-
-      response.Body = request.PositionId.HasValue
-        ? (await _repository.CreateAsync(_mapper.Map(request))).HasValue
-        : true;
+        response.Body = (await _repository.CreateAsync(_mapper.Map(request))).HasValue;
+      }
 
       if (response.Body)
       {

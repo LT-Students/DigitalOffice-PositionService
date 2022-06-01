@@ -1,4 +1,5 @@
-﻿using LT.DigitalOffice.Models.Broker.Models.Position;
+﻿using System;
+using LT.DigitalOffice.Models.Broker.Models.Position;
 using LT.DigitalOffice.PositionService.Mappers.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Db;
 
@@ -12,8 +13,8 @@ namespace LT.DigitalOffice.PositionService.Mappers.Data
       {
         return null;
       }
-
-      return new(user.UserId, user.CreatedAtUtc);
+      //TODO: fix it
+      return new(user.UserId, DateTime.Now);
     }
   }
 }
