@@ -71,7 +71,9 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
           HttpStatusCode.BadRequest,
           validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
+
       OperationResultResponse<bool> response = new();
+
       if (await _repository.DoesExistAsync(request.UserId))
       {
         response.Body = request.PositionId.HasValue
