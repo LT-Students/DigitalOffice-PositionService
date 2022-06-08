@@ -7,13 +7,6 @@ namespace LT.DigitalOffice.PositionService.Mappers.Data
 {
   public class PositionDataMapper : IPositionDataMapper
   {
-    private readonly IPositionUserDataMapper _userMapper;
-
-    public PositionDataMapper(IPositionUserDataMapper userMapper)
-    {
-      _userMapper = userMapper;
-    }
-
     public PositionData Map(DbPosition position)
     {
       if (position == null)
@@ -24,7 +17,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Data
       return new PositionData(
         position.Id,
         position.Name,
-        position.Users.Select(u => _userMapper.Map(u)).ToList());
+        position.Users.Select(user => user.Id).ToList());
     }
   }
 }
