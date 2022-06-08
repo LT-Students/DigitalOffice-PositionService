@@ -23,8 +23,8 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     private AutoMocker _mocker;
     private IGetPositionCommand _getPositionCommand;
     private Guid _guid;
-    private DbPosition dbPosition;
-    private PositionInfo position;
+    private DbPosition _dbPosition;
+    private PositionInfo _position;
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
@@ -34,8 +34,8 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
 
       _guid = Guid.NewGuid();
 
-      dbPosition = new();
-      position = new();
+      _dbPosition = new();
+      _position = new();
     }
 
     [SetUp]
@@ -50,23 +50,23 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     public async Task RepositoryReturnsNotNullElement()
     {
       OperationResultResponse<PositionInfo> result = new();
-      result.Body = position;
+      result.Body = _position;
       result.Status = OperationResultStatusType.FullSuccess;
 
       _mocker
         .Setup<IPositionRepository, Task<DbPosition>>(x => x.GetAsync(_guid))
-        .ReturnsAsync(dbPosition);
+        .ReturnsAsync(_dbPosition);
 
       _mocker
-        .Setup<IPositionInfoMapper, PositionInfo>(x => x.Map(dbPosition))
-        .Returns(position);
+        .Setup<IPositionInfoMapper, PositionInfo>(x => x.Map(_dbPosition))
+        .Returns(_position);
 
       SerializerAssert.AreEqual(result, (await _getPositionCommand.ExecuteAsync(_guid)));
 
       _mocker.Verify<IPositionRepository, Task<DbPosition>>(x => x.GetAsync(_guid), Times.Once);
       _mocker.Verify<IResponseCreator, OperationResultResponse<PositionInfo>>(
         x => x.CreateFailureResponse<PositionInfo>(HttpStatusCode.NotFound, It.IsAny<List<string>>()), Times.Never);
-      _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(dbPosition), Times.Once);
+      _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(_dbPosition), Times.Once);
     }
 
     [Test]
@@ -91,7 +91,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
       _mocker.Verify<IPositionRepository, Task<DbPosition>>(x => x.GetAsync(_guid), Times.Once);
       _mocker.Verify<IResponseCreator, OperationResultResponse<PositionInfo>>(
         x => x.CreateFailureResponse<PositionInfo>(HttpStatusCode.NotFound, It.IsAny<List<string>>()), Times.Once);
-      _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(dbPosition), Times.Never);
+      _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(_dbPosition), Times.Never);
     }
   }
 }
