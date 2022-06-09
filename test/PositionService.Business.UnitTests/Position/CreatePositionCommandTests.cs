@@ -23,7 +23,7 @@ using NUnit.Framework;
 
 namespace PositionService.Business.UnitTests
 {
-  class CreatePositionCommandTests
+  public class CreatePositionCommandTests
   {
     private AutoMocker _autoMocker;
     private ICreatePositionCommand _command;

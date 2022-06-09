@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.Attributes;
-using LT.DigitalOffice.Models.Broker.Models.Position;
 using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position.Filters;
