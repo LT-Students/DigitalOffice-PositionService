@@ -61,8 +61,6 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 
       if (position == null)
       {
-        errors.Add($"Position with id: '{position}' doesn't exist.");
-
         return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.NotFound, errors);
       }
 
