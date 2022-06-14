@@ -16,6 +16,7 @@ using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position;
 using LT.DigitalOffice.PositionService.Validation.Position.Interfaces;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 {
@@ -60,12 +61,10 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 
       if (position == null)
       {
-        errors.Add($"Position with id: '{position}' doesn't exist.");
-
         return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.NotFound, errors);
       }
 
-      foreach (var item in request.Operations)
+      foreach (Operation<EditPositionRequest> item in request.Operations)
       {
         if (item.path.EndsWith(nameof(EditPositionRequest.IsActive), StringComparison.OrdinalIgnoreCase) &&
           !bool.Parse(item.value.ToString()) &&
