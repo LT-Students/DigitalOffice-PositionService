@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\PositionService.Data.Provider\PositionService.Data.Provider.csproj" />
-    <ProjectReference Include="..\src\PositionService.Data\PositionService.Data.csproj" />
+    <ProjectReference Include="..\..\src\PositionService.Data.Provider\PositionService.Data.Provider.csproj" />
+    <ProjectReference Include="..\..\src\PositionService.Data\PositionService.Data.csproj" />
   </ItemGroup>
 
 </Project>

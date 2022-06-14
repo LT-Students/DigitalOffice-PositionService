@@ -14,7 +14,7 @@ namespace LT.DigitalOffice.PositionService.Validation.PositionUser
 {
   public class EditPositionUserRequestValidator : AbstractValidator<EditPositionUserRequest>, IEditPositionUserRequestValidator
   {
-    IRequestClient<ICheckUsersExistence> _rcCheckUsersExistence;
+    private readonly IRequestClient<ICheckUsersExistence> _rcCheckUsersExistence;
     private readonly ILogger<EditPositionUserRequestValidator> _logger;
 
     private async Task<bool> CheckUsersExistenceAsync(List<Guid> usersIds)
