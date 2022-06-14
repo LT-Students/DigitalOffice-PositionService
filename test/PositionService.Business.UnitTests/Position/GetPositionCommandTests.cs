@@ -1,4 +1,10 @@
-﻿using System.Net;
+﻿using Moq.AutoMock;
+using NUnit.Framework;
+using System;
+using Moq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Net;
 using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Mappers.Models.Interfaces;
@@ -6,19 +12,13 @@ using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.PositionService.Models.Dto.Models;
 using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.Responses;
-using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
-using System;
-using Moq.AutoMock;
-using NUnit.Framework;
 using LT.DigitalOffice.PositionService.Business.Commands.Position;
-using Moq;
 using LT.DigitalOffice.UnitTestKernel;
-using System.Collections.Generic;
 
 namespace LT.DigitalOffice.PositionService.Business.UnitTests
 {
-  public class GetPositionCommandTest
+  public class GetPositionCommandTests
   {
     private AutoMocker _mocker;
     private IGetPositionCommand _getPositionCommand;
