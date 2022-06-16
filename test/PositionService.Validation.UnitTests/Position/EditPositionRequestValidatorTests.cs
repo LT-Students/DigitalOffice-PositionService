@@ -86,7 +86,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     }
 
     [Test]
-    public void ShouldThrowValidationExceptionWhenFirstNameIsTooLong()
+    public void ShouldReturnErrorsWhenFirstNameIsTooLong()
     {
       _autoMocker
         .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
@@ -105,7 +105,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     }
 
     [Test]
-    public void ShouldThrowValidationExceptionWhenFirstNameIsEmpty()
+    public void ShouldReturnErrorsWhenFirstNameIsEmpty()
     {
       _autoMocker
         .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
@@ -124,7 +124,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     }
 
     [Test]
-    public void ShouldThrowValidationExceptionWhenLastNameIsTooLong()
+    public void ShouldReturnErrorsWhenLastNameIsTooLong()
     {
       _autoMocker
         .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
@@ -143,7 +143,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     }
 
     [Test]
-    public void ShouldThrowValidationExceptionWhenIsActiveNotCorrect()
+    public void ShouldReturnErrorsWhenIsActiveNotCorrect()
     {
       _autoMocker
         .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
@@ -162,7 +162,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     }
 
     [Test]
-    public void ShouldThrowValidationExceptionWhenPositionNotUnique()
+    public void ShouldReturnErrorsWhenPositionNotUnique()
     {
       _autoMocker
         .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
@@ -176,7 +176,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     }
 
     [Test]
-    public void ShouldThrowValidationExceptionWhenOpNotCorrect()
+    public void ShouldReturnErrorsWhenOpNotCorrect()
     {
       _autoMocker
         .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))

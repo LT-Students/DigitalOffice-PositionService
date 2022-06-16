@@ -35,7 +35,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
 
     [TestCase("Description")]
     [TestCase(null)]
-    public void ShouldNotThrowValidationException(string description)
+    public void ShouldNotReturnErrors(string description)
     {
       CreatePositionRequest request = new CreatePositionRequest()
       {
@@ -51,23 +51,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     }
 
     [Test]
-    public void ShouldThrowValidationExceptionWhenNameisEmpty()
-    {
-      CreatePositionRequest request = new CreatePositionRequest()
-      {
-        Name = null,
-        Description = _longDescription
-      };
-
-      _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
-        .ReturnsAsync(false);
-
-      _validator.TestValidate(request).ShouldHaveAnyValidationError();
-    }
-
-    [Test]
-    public void ShouldThrowValidationExceptionWhenDescriptionTooLong()
+    public void ShouldReturnErrorsWhenDescriptionTooLong()
     {
       CreatePositionRequest request = new CreatePositionRequest()
       {
@@ -83,7 +67,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     }
 
     [Test]
-    public void ShouldThrowValidationExceptionWhenNameTooLong()
+    public void ShouldReturnErrorsWhenNameTooLong()
     {
       CreatePositionRequest request = new CreatePositionRequest()
       {
@@ -99,7 +83,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     }
 
     [Test]
-    public void ShouldValidateSuccessfullyWhenPositionNotUnique()
+    public void ShouldReturnErrorsWhenPositionNotUnique()
     {
       CreatePositionRequest request = new CreatePositionRequest()
       {

@@ -112,7 +112,7 @@ namespace PositionService.Data.UnitTests
     }
 
     [Test]
-    public async Task ShouldReturnNullForAddNullPositionAsync()
+    public async Task ShouldReturnNullIfRequestIsNullAsync()
     {
       SerializerAssert.AreEqual(null, await _repository.CreateAsync(null));
     }
@@ -154,7 +154,7 @@ namespace PositionService.Data.UnitTests
     }
 
     [Test]
-    public async Task ShouldReturnNullForEdit()
+    public async Task ShouldReturnNullIfRequestIsNull()
     {
       SerializerAssert.AreEqual(null, await _repository.EditAsync(Guid.NewGuid(), _positionUser1.PositionId));
     }
