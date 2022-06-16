@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using LT.DigitalOffice.PositionService.Mappers.Db;
 using LT.DigitalOffice.PositionService.Mappers.Db.Interfaces;
-using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position;
 using LT.DigitalOffice.UnitTestKernel;
 using Microsoft.AspNetCore.Http;

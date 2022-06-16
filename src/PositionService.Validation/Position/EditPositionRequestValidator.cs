@@ -43,7 +43,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         new()
         {
           { x => !string.IsNullOrEmpty(x.value?.ToString()), "Name should not be empty." },
-          { x => x.value.ToString().Length < 81, "Max lenght of position name is 80 symbols." },
+          { x => x.value.ToString().Length < 81, "Max lenght of position name is 80 symbols." }
         },
         CascadeMode.Stop);
 
@@ -64,7 +64,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { x => x.value?.ToString()?.Length < 351, "Max lenght of position description is 350 symbols." },
+          { x => x.value?.ToString()?.Length < 351, "Max lenght of position description is 350 symbols." }
         });
 
       #endregion
@@ -76,7 +76,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { x => bool.TryParse(x.value.ToString(), out bool _), "Incorrect format of IsActive." },
+          { x => bool.TryParse(x.value.ToString(), out bool _), "Incorrect format of IsActive." }
         });
 
       #endregion

@@ -7,7 +7,6 @@ using LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef;
 using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.UnitTestKernel;
 using Microsoft.EntityFrameworkCore;
-using Moq.AutoMock;
 using NUnit.Framework;
 
 namespace PositionService.Data.UnitTests
@@ -109,6 +108,7 @@ namespace PositionService.Data.UnitTests
       };
 
       SerializerAssert.AreEqual(position.Id, await _repository.CreateAsync(position));
+      SerializerAssert.AreEqual(true, _provider.PositionsUsers.ContainsAsync(position).Result);
     }
 
     [Test]
@@ -167,6 +167,8 @@ namespace PositionService.Data.UnitTests
     public async Task ShouldReturnPositionForRemove()
     {
       SerializerAssert.AreEqual(_positionUser1.PositionId, await _repository.RemoveAsync(_positionUser1.UserId, Guid.NewGuid()));
+      SerializerAssert.AreEqual(true, _provider.PositionsUsers.ContainsAsync(_positionUser1).Result);
+      SerializerAssert.AreEqual(false, _provider.PositionsUsers.FirstOrDefaultAsync(x => x.Id == _positionUser1.Id).Result.IsActive);
     }
 
     [Test]

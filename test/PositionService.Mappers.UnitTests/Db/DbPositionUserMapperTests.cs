@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LT.DigitalOffice.Models.Broker.Publishing.Subscriber.Position;
 using LT.DigitalOffice.PositionService.Mappers.Db;
 using LT.DigitalOffice.PositionService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Db;
