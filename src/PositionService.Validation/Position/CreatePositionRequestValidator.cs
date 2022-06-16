@@ -11,7 +11,6 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
       IPositionRepository positionRepository)
     {
       RuleFor(position => position.Name)
-        .NotEmpty()
         .MaximumLength(80)
         .MustAsync(async (name, _) => !await positionRepository.DoesNameExistAsync(name))
         .WithMessage("Position name should be unique.");

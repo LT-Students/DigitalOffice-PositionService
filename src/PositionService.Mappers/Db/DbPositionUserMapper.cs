@@ -36,7 +36,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
 
     public DbPositionUser Map(EditPositionUserRequest request)
     {
-      if (request is null)
+      if (request is null || !request.PositionId.HasValue)
       {
         return null;
       }
