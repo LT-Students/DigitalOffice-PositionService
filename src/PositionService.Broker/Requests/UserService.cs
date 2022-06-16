@@ -30,13 +30,11 @@ namespace LT.DigitalOffice.PositionService.Broker.Requests
         return null;
       }
 
-      usersIds = (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
+      return (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
         _rcCheckUsersExistence,
         ICheckUsersExistence.CreateObj(usersIds),
         errors,
         _logger))?.UserIds;
-
-      return usersIds;
     }
   }
 }
