@@ -29,15 +29,6 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
     private readonly IPositionUserRepository _repository;
     private readonly IGlobalCacheRepository _globalCache;
 
-    private async Task ClearCache(Guid userId, Guid newPositionId)
-    {
-      Guid positionId = (await _repository.GetAsync(userId)).PositionId;
-
-      await Task.WhenAll(
-        _globalCache.RemoveAsync(positionId),
-        _globalCache.RemoveAsync(newPositionId));
-    }
-
     public EditPositionUserCommand(
       IAccessValidator accessValidator,
       IHttpContextAccessor httpContextAccessor,
