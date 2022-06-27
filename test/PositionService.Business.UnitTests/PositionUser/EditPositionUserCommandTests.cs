@@ -63,7 +63,8 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
 
       _dbPositionUser = new()
       {
-        Id = Guid.NewGuid()
+        Id = Guid.NewGuid(),
+        PositionId = Guid.NewGuid()
       };
 
       ValidationResult validationResult = new ValidationResult();
@@ -131,6 +132,10 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
         .ReturnsAsync(Guid.NewGuid());
 
       _mocker
+        .Setup<IPositionUserRepository, Task<DbPositionUser>>(x => x.GetAsync(It.IsAny<Guid>()))
+        .ReturnsAsync(_dbPositionUser);
+
+      _mocker
        .Setup<IResponseCreator, OperationResultResponse<bool>>(x =>
          x.CreateFailureResponse<bool>(HttpStatusCode.NotFound, It.IsAny<List<string>>()))
        .Returns(result);
@@ -195,6 +200,10 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
       _mocker
         .Setup<IPositionUserRepository, Task<Guid?>>(x => x.CreateAsync(It.IsAny<DbPositionUser>()))
         .ReturnsAsync(Guid.NewGuid());
+
+      _mocker
+        .Setup<IPositionUserRepository, Task<DbPositionUser>>(x => x.GetAsync(It.IsAny<Guid>()))
+        .ReturnsAsync(_dbPositionUser);
 
       _mocker
        .Setup<IResponseCreator, OperationResultResponse<bool>>(x =>
