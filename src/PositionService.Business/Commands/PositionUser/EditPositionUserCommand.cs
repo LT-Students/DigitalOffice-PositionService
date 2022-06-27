@@ -92,7 +92,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
 
       if (response.Body)
       {
-        //ToDo add clear cache user Position data by userId
+        await _globalCache.RemoveAsync((await _repository.GetAsync(request.UserId)).PositionId);
       }
 
       response.Status = response.Body 
