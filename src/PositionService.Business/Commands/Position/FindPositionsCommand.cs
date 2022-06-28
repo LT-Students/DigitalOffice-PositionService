@@ -4,7 +4,6 @@ using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Mappers.Models.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Dto.Models;
-using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.Responses;
 using System.Threading.Tasks;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position.Filters;
@@ -47,7 +46,6 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 
       return new()
       {
-        Status = OperationResultStatusType.FullSuccess,
         Body = positions?.Select(_mapper.Map).ToList(),
         TotalCount = totalCount
       };

@@ -61,7 +61,6 @@ namespace PositionService.Business.UnitTests
         .Setup<IResponseCreator, OperationResultResponse<Guid?>>(x => x.CreateFailureResponse<Guid?>(HttpStatusCode.BadRequest, It.IsAny<List<string>>()))
         .Returns(new OperationResultResponse<Guid?>()
         {
-          Status = OperationResultStatusType.Failed,
           Errors = new() { "Request is not correct." }
         });
 
@@ -69,7 +68,6 @@ namespace PositionService.Business.UnitTests
         .Setup<IResponseCreator, OperationResultResponse<Guid?>>(x => x.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden, It.IsAny<List<string>>()))
         .Returns(new OperationResultResponse<Guid?>()
         {
-          Status = OperationResultStatusType.Failed,
           Errors = new() { "Not enough rights." }
         });
     }
@@ -108,7 +106,6 @@ namespace PositionService.Business.UnitTests
 
       OperationResultResponse<Guid?> expectedResponse = new()
       {
-        Status = OperationResultStatusType.Failed,
         Errors = new List<string> { "Not enough rights." }
       };
 
@@ -140,8 +137,7 @@ namespace PositionService.Business.UnitTests
 
       OperationResultResponse<Guid?> expectedResponse = new()
       {
-        Status = OperationResultStatusType.Failed,
-        Errors = new List<string> { "Request is not correct." }
+        Errors = new List<string> {}
       };
 
       SerializerAssert.AreEqual(expectedResponse, await _command.ExecuteAsync(_request));
@@ -172,7 +168,6 @@ namespace PositionService.Business.UnitTests
 
       OperationResultResponse<Guid?> expectedResponse = new()
       {
-        Status = OperationResultStatusType.Failed,
         Errors = new List<string> { "Request is not correct." }
       };
 
@@ -200,7 +195,6 @@ namespace PositionService.Business.UnitTests
     {
       OperationResultResponse<Guid?> expectedResponse = new()
       {
-        Status = OperationResultStatusType.FullSuccess,
         Body = _dbPosition.Id
       };
 

@@ -51,7 +51,6 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     {
       OperationResultResponse<PositionInfo> result = new();
       result.Body = _position;
-      result.Status = OperationResultStatusType.FullSuccess;
 
       _mocker
         .Setup<IPositionRepository, Task<DbPosition>>(x => x.GetAsync(_guid))
@@ -74,8 +73,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     {
       OperationResultResponse<PositionInfo> result = new(
         body: default,
-        status: OperationResultStatusType.Failed,
-        errors: new List<string>() { "Error message" });
+        errors: new List<string>() { "Nothing found on request." });
 
       _mocker
         .Setup<IPositionRepository, Task<DbPosition>>(x => x.GetAsync(_guid))
@@ -90,7 +88,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
 
       _mocker.Verify<IPositionRepository, Task<DbPosition>>(x => x.GetAsync(_guid), Times.Once);
       _mocker.Verify<IResponseCreator, OperationResultResponse<PositionInfo>>(
-        x => x.CreateFailureResponse<PositionInfo>(HttpStatusCode.NotFound, It.IsAny<List<string>>()), Times.Once);
+        x => x.CreateFailureResponse<PositionInfo>(HttpStatusCode.NotFound, It.IsAny<List<string>>()), Times.Never);
       _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(_dbPosition), Times.Never);
     }
   }

@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Helpers.Interfaces;
+using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position;
 using LT.DigitalOffice.PositionService.Validation.Position.Interfaces;
-using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 {
@@ -22,52 +21,42 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     private readonly IPositionRepository _repository;
     private readonly IDbPositionMapper _mapper;
     private readonly IAccessValidator _accessValidator;
-    private readonly IResponseCreator _responseCreator;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CreatePositionCommand(
       ICreatePositionRequestValidator validator,
       IPositionRepository repository,
       IDbPositionMapper mapper,
-      IAccessValidator accessValidator,
-      IResponseCreator responseCreator,
-      IHttpContextAccessor httpContextAccessor)
+      IAccessValidator accessValidator)
     {
       _validator = validator;
       _repository = repository;
       _mapper = mapper;
       _accessValidator = accessValidator;
-      _responseCreator = responseCreator;
-      _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreatePositionRequest request)
     {
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemovePositions))
       {
-        return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden);
+        return ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.Forbidden);
       }
 
       ValidationResult validationResult = await _validator.ValidateAsync(request);
 
       if (!validationResult.IsValid)
       {
-        return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.BadRequest,
-          validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+        return ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.BadRequest,
+          errors: validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
 
-      OperationResultResponse<Guid?> response = new();
+      Guid? result = await _repository.CreateAsync(_mapper.Map(request));
 
-      response.Body = await _repository.CreateAsync(_mapper.Map(request));
-
-      _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
-
-      if (response.Body is null)
+      if (result is null)
       {
-        response = _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.BadRequest);
+        return ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.BadRequest);
       }
 
-      return response;
+      return ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.Created, result);
     }
   }
 }

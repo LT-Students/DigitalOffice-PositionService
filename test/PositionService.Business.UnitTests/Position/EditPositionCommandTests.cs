@@ -96,8 +96,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     {
       OperationResultResponse<bool> result = new(
         body: false,
-        status: OperationResultStatusType.Failed,
-        errors: new List<string>() { "Error message" });
+        errors: new List<string>() { "Not enough rights." });
 
       _mocker
         .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
@@ -112,7 +111,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
 
       Verifiable(
         accessValidatorTimes: Times.Once(),
-        responseCreatorTimes: Times.Once(),
+        responseCreatorTimes: Times.Never(),
         positionRepositoryGetTimes: Times.Never(),
         positionRepositoryContainsUsersTimes: Times.Never(),
         positionRepositoryEditTimes: Times.Never());
@@ -123,8 +122,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     {
       OperationResultResponse<bool> result = new(
         body: false,
-        status: OperationResultStatusType.Failed,
-        errors: new List<string>() { "Error message" });
+        errors: new List<string>() {});
 
       _mocker
         .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
@@ -143,7 +141,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
 
       Verifiable(
         accessValidatorTimes: Times.Once(),
-        responseCreatorTimes: Times.Once(),
+        responseCreatorTimes: Times.Never(),
         positionRepositoryGetTimes: Times.Once(),
         positionRepositoryContainsUsersTimes: Times.Never(),
         positionRepositoryEditTimes: Times.Never());
@@ -154,8 +152,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     {
       OperationResultResponse<bool> result = new(
         body: false,
-        status: OperationResultStatusType.Failed,
-        errors: new List<string>() { "Error message" });
+        errors: new List<string>() { "The position contains users. Please change the position to users" });
 
       _mocker
         .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
@@ -178,7 +175,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
 
       Verifiable(
         accessValidatorTimes: Times.Once(),
-        responseCreatorTimes: Times.Once(),
+        responseCreatorTimes: Times.Never(),
         positionRepositoryGetTimes: Times.Once(),
         positionRepositoryContainsUsersTimes: Times.Once(),
         positionRepositoryEditTimes: Times.Never());
@@ -194,7 +191,6 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
       {
         result = new(
           body: true,
-          status: OperationResultStatusType.FullSuccess,
           errors: new List<string>());
 
         _mocker
@@ -205,7 +201,6 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
       {
         result = new(
           body: false,
-          status: OperationResultStatusType.Failed,
           errors: new List<string>());
 
         _mocker
