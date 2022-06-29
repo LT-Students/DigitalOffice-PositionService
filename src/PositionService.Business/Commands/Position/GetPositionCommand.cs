@@ -28,15 +28,12 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     {
       DbPosition position = await _repository.GetAsync(positionId);
 
-      if (position == null)
-      {
-        return ResponseCreatorStatic.CreateResponse<PositionInfo>(HttpStatusCode.NotFound);
-      }
-
-      return new()
-      {
-        Body = _mapper.Map(position)
-      };
+      return position is null
+        ? ResponseCreatorStatic.CreateResponse<PositionInfo>(HttpStatusCode.NotFound)
+        : new()
+          {
+            Body = _mapper.Map(position)
+          };
     }
   }
 }

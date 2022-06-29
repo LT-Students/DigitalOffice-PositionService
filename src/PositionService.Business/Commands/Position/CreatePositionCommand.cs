@@ -51,12 +51,9 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 
       Guid? result = await _repository.CreateAsync(_mapper.Map(request));
 
-      if (result is null)
-      {
-        return ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.BadRequest);
-      }
-
-      return ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.Created, result);
+      return result is null
+        ? ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.BadRequest)
+        : ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.Created, result);
     }
   }
 }
