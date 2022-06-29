@@ -33,7 +33,10 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
         return ResponseCreatorStatic.CreateResponse<PositionInfo>(HttpStatusCode.NotFound);
       }
 
-      return ResponseCreatorStatic.CreateResponse<PositionInfo>(body: _mapper.Map(position));
+      return new()
+      {
+        Body = _mapper.Map(position)
+      };
     }
   }
 }

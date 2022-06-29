@@ -62,6 +62,8 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
 
       if (await _repository.DoesExistAsync(request.UserId))
       {
+        await _globalCache.RemoveAsync((await _repository.GetAsync(request.UserId)).PositionId);
+
         result = request.PositionId.HasValue
           ? (await _repository.EditAsync(request.UserId, request.PositionId.Value)).HasValue
           : (await _repository.RemoveAsync(request.UserId, _httpContextAccessor.HttpContext.GetUserId())).HasValue;
@@ -76,12 +78,10 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
         result = (await _repository.CreateAsync(_mapper.Map(request))).HasValue;
       }
 
-      if (result)
+      return new()
       {
-        await _globalCache.RemoveAsync((await _repository.GetAsync(request.UserId)).PositionId);
-      }
-
-      return ResponseCreatorStatic.CreateResponse<bool>(body: result);
+        Body = result
+      };
     }
   }
 }

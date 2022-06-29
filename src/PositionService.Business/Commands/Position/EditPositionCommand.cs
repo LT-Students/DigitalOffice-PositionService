@@ -81,7 +81,10 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
         await _globalCache.RemoveAsync(positionId);
       }
 
-      return ResponseCreatorStatic.CreateResponse<bool>(body: result);
+      return new()
+      {
+        Body = result
+      };
     }
   }
 }
