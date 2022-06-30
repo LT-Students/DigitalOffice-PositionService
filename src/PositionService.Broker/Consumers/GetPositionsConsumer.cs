@@ -28,9 +28,8 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
     private async Task<List<PositionData>> GetPositionsAsync(IGetPositionsRequest request)
     {
       List<DbPosition> dbPositions = await _repository.GetAsync(request);
-      List<PositionData> positions = dbPositions.Select(p => _positionDataMapper.Map(p)).ToList();
 
-      return positions;
+      return dbPositions.Select(p => _positionDataMapper.Map(p)).ToList();
     }
 
     public GetPositionsConsumer(
