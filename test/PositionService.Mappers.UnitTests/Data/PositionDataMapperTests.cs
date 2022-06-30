@@ -48,7 +48,7 @@ namespace PositionService.Mappers.UnitTests
         Users = _users
       };
 
-      _positionData = new(_dbPosition.Id, _dbPosition.Name, _dbPosition.Users.Select(user => user.Id).ToList());
+      _positionData = new(_dbPosition.Id, _dbPosition.Name, _dbPosition.Users.Select(user => user.UserId).ToList());
     }
 
     [Test]

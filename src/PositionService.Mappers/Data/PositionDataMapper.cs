@@ -17,7 +17,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Data
       return new PositionData(
         position.Id,
         position.Name,
-        position.Users.Select(user => user.Id).ToList());
+        position.Users.Select(user => user.UserId).ToList());
     }
   }
 }

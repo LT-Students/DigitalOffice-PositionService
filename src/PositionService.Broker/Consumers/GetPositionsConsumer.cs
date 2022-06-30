@@ -28,8 +28,9 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
     private async Task<List<PositionData>> GetPositionsAsync(IGetPositionsRequest request)
     {
       List<DbPosition> dbPositions = await _repository.GetAsync(request);
+      List<PositionData> positions = dbPositions.Select(p => _positionDataMapper.Map(p)).ToList();
 
-      return dbPositions.Select(p => _positionDataMapper.Map(p)).ToList();
+      return positions;
     }
 
     public GetPositionsConsumer(
@@ -56,11 +57,14 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
       {
         string key = context.Message.UsersIds.GetRedisCacheHashCode();
 
+        List<Guid> elementsIds = positions.Select(p => p.Id).ToList();
+        elementsIds.AddRange(positions.Select(x => x.UsersIds).SelectMany(x => x));
+
         await _globalCache.CreateAsync(
           Cache.Positions,
           key,
           positions,
-          positions.Select(p => p.Id).ToList(),
+          elementsIds,
           TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
       }
     }
