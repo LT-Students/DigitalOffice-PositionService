@@ -62,6 +62,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
 
       if (await _repository.DoesExistAsync(request.UserId))
       {
+        await _globalCache.RemoveAsync(request.PositionId.GetValueOrDefault());
         await _globalCache.RemoveAsync((await _repository.GetAsync(request.UserId)).PositionId);
 
         result = request.PositionId.HasValue
