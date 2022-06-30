@@ -1,13 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.Kernel.Helpers.Interfaces;
+using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.PositionService.Business.Commands.PositionUser.Interfaces;
@@ -23,25 +21,14 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
   {
     private readonly IAccessValidator _accessValidator;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IResponseCreator _responseCreator;
     private readonly IEditPositionUserRequestValidator _validator;
     private readonly IDbPositionUserMapper _mapper;
     private readonly IPositionUserRepository _repository;
     private readonly IGlobalCacheRepository _globalCache;
 
-    private async Task ClearCache(Guid userId, Guid newPositionId)
-    {
-      Guid positionId = (await _repository.GetAsync(userId)).PositionId;
-
-      await Task.WhenAll(
-        _globalCache.RemoveAsync(positionId),
-        _globalCache.RemoveAsync(newPositionId));
-    }
-
     public EditPositionUserCommand(
       IAccessValidator accessValidator,
       IHttpContextAccessor httpContextAccessor,
-      IResponseCreator responseCreator,
       IEditPositionUserRequestValidator validator,
       IDbPositionUserMapper mapper,
       IPositionUserRepository repository,
@@ -49,7 +36,6 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
     {
       _accessValidator = accessValidator;
       _httpContextAccessor = httpContextAccessor;
-      _responseCreator = responseCreator;
       _validator = validator;
       _mapper = mapper;
       _repository = repository;
@@ -60,23 +46,25 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
     {
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemovePositions))
       {
-        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
+        return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.Forbidden);
       }
 
       ValidationResult validationResult = await _validator.ValidateAsync(request);
 
       if (!validationResult.IsValid)
       {
-        return _responseCreator.CreateFailureResponse<bool>(
+        return ResponseCreatorStatic.CreateResponse<bool>(
           HttpStatusCode.BadRequest,
-          validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+          errors: validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
 
-      OperationResultResponse<bool> response = new();
+      bool result = false;
 
       if (await _repository.DoesExistAsync(request.UserId))
       {
-        response.Body = request.PositionId.HasValue
+        await _globalCache.RemoveAsync((await _repository.GetAsync(request.UserId)).PositionId);
+
+        result = request.PositionId.HasValue
           ? (await _repository.EditAsync(request.UserId, request.PositionId.Value)).HasValue
           : (await _repository.RemoveAsync(request.UserId, _httpContextAccessor.HttpContext.GetUserId())).HasValue;
       }
@@ -84,22 +72,16 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
       {
         if (!request.PositionId.HasValue)
         {
-          return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest);
+          return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.BadRequest);
         }
 
-        response.Body = (await _repository.CreateAsync(_mapper.Map(request))).HasValue;
+        result = (await _repository.CreateAsync(_mapper.Map(request))).HasValue;
       }
 
-      if (response.Body)
+      return new()
       {
-        //ToDo add clear cache user Position data by userId
-      }
-
-      response.Status = response.Body 
-        ? OperationResultStatusType.FullSuccess
-        : OperationResultStatusType.Failed;
-
-      return response;
+        Body = result
+      };
     }
   }
 }

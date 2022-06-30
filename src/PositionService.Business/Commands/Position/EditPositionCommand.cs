@@ -4,8 +4,8 @@ using System.Net;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
+using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
@@ -26,7 +26,6 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     private readonly IPositionRepository _repository;
     private readonly IPatchDbPositionMapper _mapper;
     private readonly IAccessValidator _accessValidator;
-    private readonly IResponseCreator _responseCreator;
     private readonly IGlobalCacheRepository _globalCache;
 
     public EditPositionCommand(
@@ -41,7 +40,6 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
       _repository = repository;
       _mapper = mapper;
       _accessValidator = accessValidator;
-      _responseCreator = responseCreator;
       _globalCache = globalCache;
     }
 
@@ -49,19 +47,19 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
     {
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemovePositions))
       {
-        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
+        return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.Forbidden);
       }
 
       if (!_validator.ValidateCustom(request, out List<string> errors))
       {
-        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest, errors);
+        return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.BadRequest, errors: errors);
       }
 
       DbPosition position = await _repository.GetAsync(positionId);
 
       if (position == null)
       {
-        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.NotFound, errors);
+        return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.NotFound, errors: errors);
       }
 
       foreach (Operation<EditPositionRequest> item in request.Operations)
@@ -72,7 +70,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
         {
           errors.Add("The position contains users. Please change the position to users");
 
-          return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Conflict, errors);
+          return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.Conflict, errors: errors);
         }
       }
 
@@ -85,7 +83,6 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 
       return new()
       {
-        Status = result ? OperationResultStatusType.FullSuccess : OperationResultStatusType.Failed,
         Body = result
       };
     }

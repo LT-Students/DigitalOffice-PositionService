@@ -63,7 +63,8 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
 
       _dbPositionUser = new()
       {
-        Id = Guid.NewGuid()
+        Id = Guid.NewGuid(),
+        PositionId = Guid.NewGuid()
       };
 
       ValidationResult validationResult = new ValidationResult();
@@ -87,8 +88,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
     {
       OperationResultResponse<bool> result = new(
         body: false,
-        status: OperationResultStatusType.Failed,
-        errors: new List<string>() { "Error message" });
+        errors: new List<string>() { "Not enough rights." });
 
       _mocker
         .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
@@ -103,7 +103,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
 
       Verifiable(
         accessValidatorTimes: Times.Once(),
-        responseCreatorTimes: Times.Once(),
+        responseCreatorTimes: Times.Never(),
         positionUserRepositoryDoesExistTimes: Times.Never(),
         positionUserRepositoryEditTimes: Times.Never(),
         positionUserRepositoryCreateTimes: Times.Never(),
@@ -115,7 +115,6 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
     {
       OperationResultResponse<bool> result = new OperationResultResponse<bool>(
           body: true,
-          status: OperationResultStatusType.FullSuccess,
           errors: new List<string>());
         
       _mocker
@@ -129,6 +128,10 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
       _mocker
         .Setup<IPositionUserRepository, Task<Guid?>>(x => x.EditAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
         .ReturnsAsync(Guid.NewGuid());
+
+      _mocker
+        .Setup<IPositionUserRepository, Task<DbPositionUser>>(x => x.GetAsync(It.IsAny<Guid>()))
+        .ReturnsAsync(_dbPositionUser);
 
       _mocker
        .Setup<IResponseCreator, OperationResultResponse<bool>>(x =>
@@ -158,7 +161,6 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
       {
         result = new(
           body: true,
-          status: OperationResultStatusType.FullSuccess,
           errors: new List<string>());
 
         request = new EditPositionUserRequest
@@ -171,8 +173,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
       {
         result = new(
           body: false,
-          status: OperationResultStatusType.Failed,
-          errors: new List<string>() { "Error message" });
+          errors: new List<string>() { "Request is not correct." });
 
         request = new EditPositionUserRequest
         {
@@ -197,6 +198,10 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
         .ReturnsAsync(Guid.NewGuid());
 
       _mocker
+        .Setup<IPositionUserRepository, Task<DbPositionUser>>(x => x.GetAsync(It.IsAny<Guid>()))
+        .ReturnsAsync(_dbPositionUser);
+
+      _mocker
        .Setup<IResponseCreator, OperationResultResponse<bool>>(x =>
          x.CreateFailureResponse<bool>(HttpStatusCode.BadRequest, It.IsAny<List<string>>()))
        .Returns(result);
@@ -205,7 +210,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
 
       Verifiable(
         accessValidatorTimes: Times.Once(),
-        responseCreatorTimes: isPositionId ? Times.Never() : Times.Once(),
+        responseCreatorTimes: Times.Never(),
         positionUserRepositoryDoesExistTimes: Times.Once(),
         positionUserRepositoryEditTimes: Times.Never(),
         positionUserRepositoryCreateTimes: isPositionId ? Times.Once() : Times.Never(),
