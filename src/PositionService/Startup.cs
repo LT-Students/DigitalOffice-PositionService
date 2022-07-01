@@ -21,6 +21,7 @@ using MassTransit;
 using MassTransit.RabbitMqTransport;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -254,6 +255,8 @@ namespace LT.DigitalOffice.PositionService
           ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
       });
+
+      ResponseCreatorStatic.ResponseCreatorConfigure(app.ApplicationServices.GetService<IHttpContextAccessor>());
     }
 
     #endregion

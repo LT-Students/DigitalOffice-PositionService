@@ -56,11 +56,14 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
       {
         string key = context.Message.UsersIds.GetRedisCacheHashCode();
 
+        List<Guid> elementsIds = positions.Select(p => p.Id).ToList();
+        elementsIds.AddRange(positions.Select(x => x.UsersIds).SelectMany(x => x));
+
         await _globalCache.CreateAsync(
           Cache.Positions,
           key,
           positions,
-          positions.Select(p => p.Id).ToList(),
+          elementsIds,
           TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
       }
     }

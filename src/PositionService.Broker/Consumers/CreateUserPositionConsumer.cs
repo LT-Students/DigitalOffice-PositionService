@@ -20,7 +20,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
       {
         await _positionUserRepository.CreateAsync(_positionUserMapper.Map(request));
 
-        await _globalCache.RemoveAsync(request.PositionId);
+        await _globalCache.RemoveAsync(request.UserId);
       }
     }
 
