@@ -10,10 +10,10 @@ namespace LT.DigitalOffice.PositionService.Controllers
   [ApiController]
   public class UserController : ControllerBase
   {
-    [HttpPost("CreatePosition")]
-    public async Task<OperationResultResponse<bool>> CreatePositionAsync(
-      [FromServices] ICreatePositionUserCommand command,
-      [FromBody] CreatePositionUserRequest request)
+    [HttpPut("edit")]
+    public async Task<OperationResultResponse<bool>> EditAsync(
+      [FromServices] IEditPositionUserCommand command,
+      [FromBody] EditPositionUserRequest request)
     {
       return await command.ExecuteAsync(request);
     }

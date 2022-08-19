@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Provider;
 using LT.DigitalOffice.PositionService.Models.Db;
@@ -22,7 +21,7 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<Guid?> CreateAsync(DbPositionUser positionUser)
     {
-      if (positionUser == null)
+      if (positionUser is null)
       {
         return null;
       }
@@ -35,7 +34,9 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<DbPositionUser> GetAsync(Guid userId)
     {
-      return await _provider.PositionsUsers.Include(u => u.Position).FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
+      return await _provider.PositionsUsers
+        .Include(u => u.Position)
+        .FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
     }
 
     public async Task<List<DbPositionUser>> GetAsync(List<Guid> userIds)
@@ -46,30 +47,50 @@ namespace LT.DigitalOffice.PositionService.Data
         .ToListAsync();
     }
 
-    public async Task<List<DbPositionUser>> GetAsync(IGetPositionsRequest request)
+    public async Task<Guid?> EditAsync(Guid userId, Guid positionId)
     {
-      if (request is null)
+      DbPositionUser dbPositionUser = await _provider.PositionsUsers
+        .FirstOrDefaultAsync(u => u.UserId == userId);
+
+      if (dbPositionUser == null)
       {
         return null;
       }
 
-      return await _provider.PositionsUsers
-        .Include(pu => pu.Position)
-        .Where(u => u.IsActive && request.UsersIds.Contains(u.UserId))
-        .ToListAsync();
+      if (!dbPositionUser.IsActive)
+      {
+        dbPositionUser.PositionId = positionId;
+        dbPositionUser.IsActive = true;
+      }
+      else
+      {
+        dbPositionUser.PositionId = positionId;
+      }
+
+      await _provider.SaveAsync();
+      return dbPositionUser.PositionId;
     }
 
-    public async Task RemoveAsync(Guid userId, Guid removedBy)
+    public async Task<Guid?> RemoveAsync(Guid userId, Guid removedBy)
     {
-      DbPositionUser user = await _provider.PositionsUsers.FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
+      DbPositionUser dbPositionUser = await _provider.PositionsUsers
+        .FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
 
-      if (user != null)
+      if (dbPositionUser is null)
       {
-        user.IsActive = false;
-        user.ModifiedAtUtc = DateTime.UtcNow;
-        user.ModifiedBy = removedBy;
-        await _provider.SaveAsync();
+        return null;
       }
+
+      dbPositionUser.IsActive = false;
+      dbPositionUser.CreatedBy = removedBy;
+      await _provider.SaveAsync();
+
+      return dbPositionUser.PositionId;
+    }
+
+    public async Task<bool> DoesExistAsync(Guid userId)
+    {
+      return await _provider.PositionsUsers.AnyAsync(pu => pu.UserId == userId);
     }
   }
 }

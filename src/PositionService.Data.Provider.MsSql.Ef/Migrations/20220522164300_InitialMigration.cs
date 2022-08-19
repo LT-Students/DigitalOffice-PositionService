@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef.Migrations
 {
   [DbContext(typeof(PositionServiceDbContext))]
-  [Migration("20211021130000_InitialMigration")]
+  [Migration("20220522164300_InitialMigration")]
   public class InitialMigration : Migration
   {
     private void CreatePositionTable(MigrationBuilder migrationBuilder)
@@ -40,17 +40,25 @@ namespace LT.DigitalOffice.PositionService.Data.Provider.MsSql.Ef.Migrations
           Id = table.Column<Guid>(nullable: false),
           PositionId = table.Column<Guid>(nullable: false),
           UserId = table.Column<Guid>(nullable: false),
-          Rate = table.Column<double>(nullable: false),
           IsActive = table.Column<bool>(nullable: false),
           CreatedBy = table.Column<Guid>(nullable: false),
-          CreatedAtUtc = table.Column<DateTime>(nullable: false),
-          ModifiedBy = table.Column<Guid>(nullable: true),
-          ModifiedAtUtc = table.Column<DateTime>(nullable: true)
+          PeriodEnd = table.Column<DateTime>(type: "datetime2", nullable: false)
+            .Annotation("SqlServer:IsTemporal", true)
+            .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+            .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
+          PeriodStart = table.Column<DateTime>(type: "datetime2", nullable: false)
+            .Annotation("SqlServer:IsTemporal", true)
+            .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+            .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart")
         },
         constraints: table =>
         {
-          table.PrimaryKey("PK_PositionUsers", p => p.Id);
-        });
+          table.PrimaryKey("PK_PositionsUsers", p => p.Id);
+        })
+        .Annotation("SqlServer:IsTemporal", true)
+        .Annotation("SqlServer:TemporalHistoryTableName", DbPositionUser.HistoryTableName)
+        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"); ;
     }
 
     protected override void Up(MigrationBuilder migrationBuilder)

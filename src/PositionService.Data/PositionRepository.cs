@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using LT.DigitalOffice.Kernel.Extensions;
+using LT.DigitalOffice.Models.Broker.Requests.Position;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Provider;
 using LT.DigitalOffice.PositionService.Models.Db;
-using LT.DigitalOffice.Kernel.Extensions;
+using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
-using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position.Filters;
-using System.Threading.Tasks;
-using LT.DigitalOffice.Models.Broker.Requests.Position;
 
 namespace LT.DigitalOffice.PositionService.Data
 {
@@ -49,9 +49,21 @@ namespace LT.DigitalOffice.PositionService.Data
     {
       IQueryable<DbPosition> dbPositions = _provider.Positions.AsQueryable();
 
-      if (!filter.IncludeDeactivated)
+      if (filter.IsActive.HasValue)
       {
-        dbPositions = dbPositions.Where(p => p.IsActive);
+        dbPositions = dbPositions.Where(x => x.IsActive == filter.IsActive);
+      }
+
+      if (filter.IsAscendingSort.HasValue)
+      {
+        dbPositions = filter.IsAscendingSort.Value
+          ? dbPositions.OrderBy(o => o.Name)
+          : dbPositions.OrderByDescending(o => o.Name);
+      }
+
+      if (!string.IsNullOrWhiteSpace(filter.NameIncludeSubstring))
+      {
+        dbPositions = dbPositions.Where(d => d.Name.ToLower().Contains(filter.NameIncludeSubstring.ToLower()));
       }
 
       return (await dbPositions.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbPositions.CountAsync());
@@ -63,12 +75,23 @@ namespace LT.DigitalOffice.PositionService.Data
 
       if (request.UsersIds is not null && request.UsersIds.Any())
       {
-        dbPosition = dbPosition.Where(d => d.IsActive && d.Users.Any(du => request.UsersIds.Contains(du.UserId)));
+        dbPosition = dbPosition
+          .Where(d =>
+            d.IsActive
+            && d.Users.Any(du => du.IsActive && request.UsersIds.Contains(du.UserId)));
       }
 
       dbPosition = dbPosition.Include(d => d.Users.Where(du => du.IsActive));
 
       return await dbPosition.ToListAsync();
+    }
+
+    public async Task<List<DbPosition>> GetAsync(List<Guid> positionsIds)
+    {
+      return await _provider.Positions
+        .Where(
+          p => positionsIds.Contains(p.Id)).Include(p => p.Users.Where(u => u.IsActive))
+        .ToListAsync();
     }
 
     public async Task<bool> ContainsUsersAsync(Guid positionId)

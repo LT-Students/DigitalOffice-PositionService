@@ -1,24 +1,34 @@
-﻿using System.Threading.Tasks;
-using LT.DigitalOffice.Models.Broker.Common;
+﻿using System;
+using System.Threading.Tasks;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
+using LT.DigitalOffice.Models.Broker.Publishing;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using MassTransit;
 
 namespace LT.DigitalOffice.PositionService.Broker.Consumers
 {
-  public class DisactivateUserConsumer : IConsumer<IDisactivateUserRequest>
+  public class DisactivateUserConsumer : IConsumer<IDisactivateUserPublish>
   {
     private readonly IPositionUserRepository _positionUserRepository;
+    private readonly IGlobalCacheRepository _globalCache;
 
     public DisactivateUserConsumer(
-      IPositionUserRepository positionUserRepository)
+      IPositionUserRepository positionUserRepository,
+      IGlobalCacheRepository globalCache)
     {
       _positionUserRepository = positionUserRepository;
+      _globalCache = globalCache;
     }
 
-    public async Task Consume(ConsumeContext<IDisactivateUserRequest> context)
+    public async Task Consume(ConsumeContext<IDisactivateUserPublish> context)
     {
-      await Task.WhenAll(
-        _positionUserRepository.RemoveAsync(context.Message.UserId, context.Message.ModifiedBy));
+      Guid? positionId = await _positionUserRepository
+        .RemoveAsync(context.Message.UserId, context.Message.ModifiedBy);
+
+      if (positionId.HasValue)
+      {
+        await _globalCache.RemoveAsync(positionId.Value);
+      }
     }
   }
 }

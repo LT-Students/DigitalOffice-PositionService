@@ -1,6 +1,6 @@
 ﻿using System;
 using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.Models.Broker.Requests.Position;
+using LT.DigitalOffice.Models.Broker.Publishing.Subscriber.Position;
 using LT.DigitalOffice.PositionService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.PositionUser;
@@ -17,7 +17,7 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
       _httpContextAccessor = httpContextAccessor;
     }
 
-    public DbPositionUser Map(ICreateUserPositionRequest request)
+    public DbPositionUser Map(ICreateUserPositionPublish request)
     {
       if (request is null)
       {
@@ -30,14 +30,13 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
         UserId = request.UserId,
         PositionId = request.PositionId,
         IsActive = true,
-        CreatedBy = request.CreatedBy,
-        CreatedAtUtc = DateTime.UtcNow
+        CreatedBy = request.CreatedBy
       };
     }
 
-    public DbPositionUser Map(CreatePositionUserRequest request)
+    public DbPositionUser Map(EditPositionUserRequest request)
     {
-      if (request is null)
+      if (request is null || !request.PositionId.HasValue)
       {
         return null;
       }
@@ -46,10 +45,9 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
       {
         Id = Guid.NewGuid(),
         UserId = request.UserId,
-        PositionId = request.PositionId,
+        PositionId = request.PositionId.Value,
         IsActive = true,
-        CreatedBy = _httpContextAccessor.HttpContext.GetUserId(),
-        CreatedAtUtc = DateTime.UtcNow
+        CreatedBy = _httpContextAccessor.HttpContext.GetUserId()
       };
     }
   }
