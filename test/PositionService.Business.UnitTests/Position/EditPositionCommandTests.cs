@@ -121,7 +121,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     {
       OperationResultResponse<bool> result = new(
         body: false,
-        errors: new List<string>() { });
+        errors: new List<string>() {});
 
       _mocker
         .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
