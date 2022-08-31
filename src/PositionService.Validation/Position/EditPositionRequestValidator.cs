@@ -22,6 +22,8 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
       RequestedOperation = requestedOperation;
       Context = context;
 
+      Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-RU");
+
       #region Paths
 
       AddСorrectPaths(
@@ -88,8 +90,6 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
     public EditPositionRequestValidator(IPositionRepository positionRepository)
     {
       _positionRepository = positionRepository;
-
-      Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-RU");
 
       RuleForEach(x => x.Operations)
         .CustomAsync(async (operation, context, _) => await HandleInternalPropertyValidationAsync(operation, context));
