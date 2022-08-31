@@ -8,4 +8,19 @@
     <ProjectReference Include="..\PositionService.Models.Dto\PositionService.Models.Dto.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Position\Resources\PositionRequestValidationResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PositionRequestValidationResource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Position\Resources\PositionRequestValidationResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PositionRequestValidationResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

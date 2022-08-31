@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.PositionService.Business.Commands.Position;
@@ -122,7 +121,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     {
       OperationResultResponse<bool> result = new(
         body: false,
-        errors: new List<string>() {});
+        errors: new List<string>() { });
 
       _mocker
         .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
