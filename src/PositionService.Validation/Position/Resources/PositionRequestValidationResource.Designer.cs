@@ -62,7 +62,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Description is to long.
+        ///   Looks up a localized string similar to Description is too long.
         /// </summary>
         internal static string DescriptionLong {
             get {
@@ -71,7 +71,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Incorrect format of .
+        ///   Looks up a localized string similar to Incorrect format of.
         /// </summary>
         internal static string IncorrectType {
             get {
@@ -89,7 +89,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Name is to long.
+        ///   Looks up a localized string similar to Name is too long.
         /// </summary>
         internal static string NameLong {
             get {
@@ -98,7 +98,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to  property can not be null or empty.
+        ///   Looks up a localized string similar to can&apos;t be null or empty.
         /// </summary>
         internal static string NotNullOrEmpy {
             get {

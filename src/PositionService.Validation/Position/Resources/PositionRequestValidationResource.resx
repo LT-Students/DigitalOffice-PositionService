@@ -118,18 +118,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DescriptionLong" xml:space="preserve">
-    <value>Description is to long</value>
+    <value>Description is too long</value>
   </data>
   <data name="IncorrectType" xml:space="preserve">
-    <value>Incorrect format of </value>
+    <value>Incorrect format of</value>
   </data>
   <data name="NameExists" xml:space="preserve">
     <value>The position name already exists</value>
   </data>
   <data name="NameLong" xml:space="preserve">
-    <value>Name is to long</value>
+    <value>Name is too long</value>
   </data>
   <data name="NotNullOrEmpy" xml:space="preserve">
-    <value> property can not be null or empty</value>
+    <value>can't be null or empty</value>
   </data>
 </root>

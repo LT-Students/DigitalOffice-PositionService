@@ -47,7 +47,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { x => !string.IsNullOrEmpty(x.value?.ToString()), string.Join(nameof(EditPositionRequest.Name), PositionRequestValidationResource.NotNullOrEmpy) },
+          { x => !string.IsNullOrEmpty(x.value?.ToString()), string.Join(' ', nameof(EditPositionRequest.Name), PositionRequestValidationResource.NotNullOrEmpy) },
           { x => x.value.ToString().Length < 81, PositionRequestValidationResource.NameLong }
         },
         CascadeMode.Stop);
@@ -81,7 +81,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { x => bool.TryParse(x.value.ToString(), out bool _), string.Join(PositionRequestValidationResource.NameExists, nameof(EditPositionRequest.IsActive))}
+          { x => bool.TryParse(x.value.ToString(), out bool _), string.Join(' ', PositionRequestValidationResource.IncorrectType, nameof(EditPositionRequest.IsActive))}
         });
 
       #endregion
