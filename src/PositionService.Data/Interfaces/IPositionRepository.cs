@@ -12,7 +12,7 @@ namespace LT.DigitalOffice.PositionService.Data.Interfaces
   [AutoInject]
   public interface IPositionRepository
   {
-    Task<Guid?> CreateAsync(DbPosition position);
+    Task CreateAsync(DbPosition position);
 
     Task<DbPosition> GetAsync(Guid positionId);
 

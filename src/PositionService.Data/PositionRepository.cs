@@ -27,82 +27,80 @@ namespace LT.DigitalOffice.PositionService.Data
       _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<Guid?> CreateAsync(DbPosition newPosition)
+    public Task CreateAsync(DbPosition newPosition)
     {
-      if (newPosition == null)
+      if (newPosition is null)
       {
-        return null;
+        return Task.CompletedTask;
       }
 
       _provider.Positions.Add(newPosition);
-      await _provider.SaveAsync();
-
-      return newPosition.Id;
+      return _provider.SaveAsync();
     }
 
-    public async Task<DbPosition> GetAsync(Guid positionId)
+    public Task<DbPosition> GetAsync(Guid positionId)
     {
-      return await _provider.Positions.FirstOrDefaultAsync(d => d.Id == positionId);
+      return _provider.Positions.FirstOrDefaultAsync(d => d.Id == positionId);
     }
 
     public async Task<(List<DbPosition>, int totalCount)> FindAsync(FindPositionsFilter filter)
     {
-      IQueryable<DbPosition> dbPositions = _provider.Positions.AsQueryable();
+      IQueryable<DbPosition> positionQuery = _provider.Positions.AsQueryable();
 
       if (filter.IsActive.HasValue)
       {
-        dbPositions = dbPositions.Where(x => x.IsActive == filter.IsActive);
+        positionQuery = positionQuery.Where(x => x.IsActive == filter.IsActive);
       }
 
       if (filter.IsAscendingSort.HasValue)
       {
-        dbPositions = filter.IsAscendingSort.Value
-          ? dbPositions.OrderBy(o => o.Name)
-          : dbPositions.OrderByDescending(o => o.Name);
+        positionQuery = filter.IsAscendingSort.Value
+          ? positionQuery.OrderBy(o => o.Name)
+          : positionQuery.OrderByDescending(o => o.Name);
       }
 
       if (!string.IsNullOrWhiteSpace(filter.NameIncludeSubstring))
       {
-        dbPositions = dbPositions.Where(d => d.Name.ToLower().Contains(filter.NameIncludeSubstring.ToLower()));
+        positionQuery = positionQuery.Where(d => d.Name.ToLower().Contains(filter.NameIncludeSubstring.ToLower()));
       }
 
-      return (await dbPositions.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbPositions.CountAsync());
+      return (await positionQuery.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await positionQuery.CountAsync());
     }
 
-    public async Task<List<DbPosition>> GetAsync(IGetPositionsRequest request)
+    public Task<List<DbPosition>> GetAsync(IGetPositionsRequest request)
     {
-      IQueryable<DbPosition> dbPosition = _provider.Positions.AsQueryable();
+      IQueryable<DbPosition> positionQuery = _provider.Positions.AsQueryable();
 
       if (request.UsersIds is not null && request.UsersIds.Any())
       {
-        dbPosition = dbPosition
+        positionQuery = positionQuery
           .Where(d =>
             d.IsActive
             && d.Users.Any(du => du.IsActive && request.UsersIds.Contains(du.UserId)));
       }
 
-      dbPosition = dbPosition.Include(d => d.Users.Where(du => du.IsActive));
+      positionQuery = positionQuery.Include(d => d.Users.Where(du => du.IsActive));
 
-      return await dbPosition.ToListAsync();
+      return positionQuery.ToListAsync();
     }
 
-    public async Task<List<DbPosition>> GetAsync(List<Guid> positionsIds)
+    public Task<List<DbPosition>> GetAsync(List<Guid> positionsIds)
     {
-      return await _provider.Positions
+      return _provider.Positions
         .Where(
           p => positionsIds.Contains(p.Id)).Include(p => p.Users.Where(u => u.IsActive))
         .ToListAsync();
     }
 
-    public async Task<bool> ContainsUsersAsync(Guid positionId)
+    public Task<bool> ContainsUsersAsync(Guid positionId)
     {
-      return await _provider.PositionsUsers
+      return _provider.PositionsUsers
         .AnyAsync(pu => pu.PositionId == positionId && pu.IsActive);
     }
 
     public async Task<bool> EditAsync(DbPosition position, JsonPatchDocument<DbPosition> request)
     {
-      if (position == null)
+      if (position is null)
       {
         return false;
       }
@@ -115,14 +113,14 @@ namespace LT.DigitalOffice.PositionService.Data
       return true;
     }
 
-    public async Task<bool> DoesNameExistAsync(string name)
+    public Task<bool> DoesNameExistAsync(string name)
     {
-      return await _provider.Positions.AnyAsync(p => p.Name == name);
+      return _provider.Positions.AnyAsync(p => p.Name == name);
     }
 
-    public async Task<bool> DoesExistAsync(Guid positionId)
+    public Task<bool> DoesExistAsync(Guid positionId)
     {
-      return await _provider.Positions.AnyAsync(p => p.Id == positionId);
+      return _provider.Positions.AnyAsync(p => p.Id == positionId);
     }
   }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DigitalOffice.Models.Broker.Publishing;
 using LT.DigitalOffice.Kernel.Attributes;
 using LT.DigitalOffice.PositionService.Models.Db;
 
@@ -9,7 +10,9 @@ namespace LT.DigitalOffice.PositionService.Data.Interfaces
   [AutoInject]
   public interface IPositionUserRepository
   {
-    Task<Guid?> CreateAsync(DbPositionUser positionUser);
+    Task CreateAsync(DbPositionUser positionUser);
+
+    Task<Guid?> ActivateAsync(IActivateUserPublish request);
 
     Task<DbPositionUser> GetAsync(Guid userId);
 

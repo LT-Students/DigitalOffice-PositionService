@@ -10,6 +10,7 @@ using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Mappers.Db.Interfaces;
+using LT.DigitalOffice.PositionService.Models.Db;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position;
 using LT.DigitalOffice.PositionService.Validation.Position.Interfaces;
 
@@ -45,15 +46,16 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
 
       if (!validationResult.IsValid)
       {
-        return ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.BadRequest,
+        return ResponseCreatorStatic.CreateResponse<Guid?>(
+          HttpStatusCode.BadRequest,
           errors: validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
 
-      Guid? result = await _repository.CreateAsync(_mapper.Map(request));
+      DbPosition dbPosition = _mapper.Map(request);
 
-      return result is null
-        ? ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.BadRequest)
-        : ResponseCreatorStatic.CreateResponse<Guid?>(HttpStatusCode.Created, result);
+      await _repository.CreateAsync(dbPosition);
+
+      return new OperationResultResponse<Guid?>(body: dbPosition.Id);
     }
   }
 }
