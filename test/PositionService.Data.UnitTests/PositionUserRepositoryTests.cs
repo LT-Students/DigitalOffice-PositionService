@@ -96,7 +96,7 @@ namespace PositionService.Data.UnitTests
     #region AddPositionUser
 
     [Test]
-    public async Task ShouldAddPositionUserAsync()
+    public void ShouldAddPositionUserAsync()
     {
       DbPositionUser position = new DbPositionUser
       {
