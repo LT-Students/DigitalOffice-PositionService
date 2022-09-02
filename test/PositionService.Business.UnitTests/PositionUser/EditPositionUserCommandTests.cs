@@ -43,7 +43,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
         x => x.CreateFailureResponse<bool>(It.IsAny<HttpStatusCode>(), It.IsAny<List<string>>()), responseCreatorTimes);
       _mocker.Verify<IPositionUserRepository, Task<bool>>(x => x.DoesExistAsync(It.IsAny<Guid>()), positionUserRepositoryDoesExistTimes);
       _mocker.Verify<IPositionUserRepository, Task<Guid?>>(x => x.EditAsync(It.IsAny<Guid>(), It.IsAny<Guid>()), positionUserRepositoryEditTimes);
-      _mocker.Verify<IPositionUserRepository, Task<Guid?>>(x => x.CreateAsync(It.IsAny<DbPositionUser>()), positionUserRepositoryCreateTimes);
+      _mocker.Verify<IPositionUserRepository, Task>(x => x.CreateAsync(It.IsAny<DbPositionUser>()), positionUserRepositoryCreateTimes);
       _mocker.Verify<IDbPositionUserMapper, DbPositionUser>(x => x.Map(It.IsAny<EditPositionUserRequest>()), dbPositionUserMapperTimes);
 
       _mocker.Resolvers.Clear();
@@ -194,8 +194,8 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests.PositionUser
         .Returns(_dbPositionUser);
 
       _mocker
-        .Setup<IPositionUserRepository, Task<Guid?>>(x => x.CreateAsync(It.IsAny<DbPositionUser>()))
-        .ReturnsAsync(Guid.NewGuid());
+        .Setup<IPositionUserRepository, Task>(x => x.CreateAsync(It.IsAny<DbPositionUser>()))
+        .Returns(Task.CompletedTask);
 
       _mocker
         .Setup<IPositionUserRepository, Task<DbPositionUser>>(x => x.GetAsync(It.IsAny<Guid>()))

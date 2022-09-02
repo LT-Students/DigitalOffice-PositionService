@@ -96,7 +96,7 @@ namespace PositionService.Data.UnitTests
     #region AddPositionUser
 
     [Test]
-    public async Task ShouldAddPositionUserAsync()
+    public void ShouldAddPositionUserAsync()
     {
       DbPositionUser position = new DbPositionUser
       {
@@ -107,14 +107,8 @@ namespace PositionService.Data.UnitTests
         CreatedBy = Guid.NewGuid()
       };
 
-      SerializerAssert.AreEqual(position.Id, await _repository.CreateAsync(position));
+      Assert.DoesNotThrowAsync(async () => await _repository.CreateAsync(position));
       SerializerAssert.AreEqual(true, _provider.PositionsUsers.ContainsAsync(position).Result);
-    }
-
-    [Test]
-    public async Task ShouldReturnNullIfRequestIsNullAsync()
-    {
-      SerializerAssert.AreEqual(null, await _repository.CreateAsync(null));
     }
 
     #endregion

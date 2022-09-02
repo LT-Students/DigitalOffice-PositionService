@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
+using LT.DigitalOffice.Kernel.BrokerSupport.Helpers;
 using LT.DigitalOffice.Kernel.BrokerSupport.Middlewares.Token;
 using LT.DigitalOffice.Kernel.Configurations;
 using LT.DigitalOffice.Kernel.EFSupport.Extensions;
@@ -44,41 +45,17 @@ namespace LT.DigitalOffice.PositionService
 
     #region private methods
 
-    private (string username, string password) GetRabbitMqCredentials()
-    {
-      static string GetString(string envVar, string formAppsettings, string generated, string fieldName)
-      {
-        string str = Environment.GetEnvironmentVariable(envVar);
-        if (string.IsNullOrEmpty(str))
-        {
-          str = formAppsettings ?? generated;
-
-          Log.Information(
-            formAppsettings == null
-              ? $"Default RabbitMq {fieldName} was used."
-              : $"RabbitMq {fieldName} from appsetings.json was used.");
-        }
-        else
-        {
-          Log.Information($"RabbitMq {fieldName} from environment was used.");
-        }
-
-        return str;
-      }
-
-      return (GetString("RabbitMqUsername", _rabbitMqConfig.Username, $"{_serviceInfoConfig.Name}_{_serviceInfoConfig.Id}", "Username"),
-        GetString("RabbitMqPassword", _rabbitMqConfig.Password, _serviceInfoConfig.Id, "Password"));
-    }
-
     private void ConfigureMassTransit(IServiceCollection services)
     {
-      (string username, string password) = GetRabbitMqCredentials();
+      (string username, string password) = RabbitMqCredentialsHelper
+        .Get(_rabbitMqConfig, _serviceInfoConfig);
 
       services.AddMassTransit(x =>
       {
         x.AddConsumer<CreateUserPositionConsumer>();
         x.AddConsumer<GetPositionsConsumer>();
-        x.AddConsumer<DisactivateUserConsumer>();
+        x.AddConsumer<DisactivateUserPositionConsumer>();
+        x.AddConsumer<ActivateUserPositionConsumer>();
         x.AddConsumer<FilterPositionsUsersConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
@@ -112,9 +89,14 @@ namespace LT.DigitalOffice.PositionService
         ep.ConfigureConsumer<GetPositionsConsumer>(context);
       });
 
-      cfg.ReceiveEndpoint(_rabbitMqConfig.DisactivatePositionUserEndpoint, ep =>
+      cfg.ReceiveEndpoint(_rabbitMqConfig.DisactivateUserPositionEndpoint, ep =>
       {
-        ep.ConfigureConsumer<DisactivateUserConsumer>(context);
+        ep.ConfigureConsumer<DisactivateUserPositionConsumer>(context);
+      });
+
+      cfg.ReceiveEndpoint(_rabbitMqConfig.ActivateUserPositionEndpoint, ep =>
+      {
+        ep.ConfigureConsumer<ActivateUserPositionConsumer>(context);
       });
 
       cfg.ReceiveEndpoint(_rabbitMqConfig.FilterPositionsEndpoint, ep =>

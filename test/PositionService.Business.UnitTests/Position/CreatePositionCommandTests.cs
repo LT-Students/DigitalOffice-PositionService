@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.PositionService.Business.Commands.Position;
@@ -93,8 +92,8 @@ namespace PositionService.Business.UnitTests
         .Returns(_dbPosition);
 
       _autoMocker
-        .Setup<IPositionRepository, Task<Guid?>>(x => x.CreateAsync(_dbPosition))
-        .ReturnsAsync(_dbPosition.Id);
+        .Setup<IPositionRepository, Task>(x => x.CreateAsync(_dbPosition))
+        .Returns(Task.CompletedTask);
     }
 
     [Test]
@@ -137,7 +136,7 @@ namespace PositionService.Business.UnitTests
 
       OperationResultResponse<Guid?> expectedResponse = new()
       {
-        Errors = new List<string> {}
+        Errors = new List<string> { }
       };
 
       SerializerAssert.AreEqual(expectedResponse, await _command.ExecuteAsync(_request));
@@ -157,37 +156,6 @@ namespace PositionService.Business.UnitTests
       _autoMocker.Verify<IPositionRepository>(
         x => x.CreateAsync(It.IsAny<DbPosition>()),
         Times.Never);
-    }
-
-    [Test]
-    public async Task ShouldReturnFailedResponseWhenRepositoryReturnNullAsync()
-    {
-      _autoMocker
-        .Setup<IPositionRepository, Task<Guid?>>(x => x.CreateAsync(_dbPosition))
-        .ReturnsAsync((Guid?)null);
-
-      OperationResultResponse<Guid?> expectedResponse = new()
-      {
-        Errors = new List<string> { "Request is not correct." }
-      };
-
-      SerializerAssert.AreEqual(expectedResponse, await _command.ExecuteAsync(_request));
-
-      _autoMocker.Verify<IAccessValidator>(
-        x => x.HasRightsAsync(It.IsAny<int>()),
-        Times.Once);
-
-      _autoMocker.Verify<ICreatePositionRequestValidator>(
-        x => x.ValidateAsync(It.IsAny<CreatePositionRequest>(), It.IsAny<CancellationToken>()),
-        Times.Once);
-
-      _autoMocker.Verify<IDbPositionMapper>(
-        x => x.Map(It.IsAny<CreatePositionRequest>()),
-        Times.Once);
-
-      _autoMocker.Verify<IPositionRepository>(
-        x => x.CreateAsync(It.IsAny<DbPosition>()),
-        Times.Once);
     }
 
     [Test]
