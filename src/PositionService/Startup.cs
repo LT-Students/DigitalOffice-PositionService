@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using DigitalOffice.Kernel.RedisSupport.Extensions;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
@@ -179,20 +180,7 @@ namespace LT.DigitalOffice.PositionService
         .AddSqlServer(connStr)
         .AddRabbitMqCheck();
 
-      redisConnStr = Environment.GetEnvironmentVariable("RedisConnectionString");
-      if (string.IsNullOrEmpty(redisConnStr))
-      {
-        redisConnStr = Configuration.GetConnectionString("Redis");
-
-        Log.Information($"Redis connection string from appsettings.json was used. Value '{PasswordHider.Hide(redisConnStr)}'");
-      }
-      else
-      {
-        Log.Information($"Redis connection string from environment was used. Value '{PasswordHider.Hide(redisConnStr)}'");
-      }
-
-      services.AddSingleton<IConnectionMultiplexer>(
-        x => ConnectionMultiplexer.Connect(redisConnStr + ",abortConnect=false,connectRetry=1,connectTimeout=2000"));
+      redisConnStr = services.AddRedisSingleton(Configuration);
 
       services.AddBusinessObjects();
 
@@ -203,11 +191,7 @@ namespace LT.DigitalOffice.PositionService
     {
       app.UpdateDatabase<PositionServiceDbContext>();
 
-      string error = FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Positions);
-      if (error is not null)
-      {
-        Log.Error(error);
-      }
+      FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Positions);
 
       app.UseForwardedHeaders();
 
