@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.TestHelper;
@@ -17,8 +18,10 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
   public class EditPositionRequestValidatorTests
   {
     private AutoMocker _autoMocker;
-    private IValidator<JsonPatchDocument<EditPositionRequest>> _validator;
+    private IValidator<(Guid, JsonPatchDocument<EditPositionRequest>)> _validator;
+    private ValueTuple<Guid, JsonPatchDocument<EditPositionRequest>> _valueTuple;
     private JsonPatchDocument<EditPositionRequest> _editUserRequest;
+    private Guid _positionId;
     private string _longName = "12345678901234567890123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789";
     private string _longDescription = "12345678901234567890123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789" +
       "123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789" +
@@ -29,6 +32,8 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     {
       _autoMocker = new AutoMocker();
       _validator = _autoMocker.CreateInstance<EditPositionRequestValidator>();
+
+      _positionId = Guid.NewGuid();
 
       _editUserRequest = new JsonPatchDocument<EditPositionRequest>(new List<Operation<EditPositionRequest>>
       {
@@ -48,6 +53,8 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
           "",
           true)
       }, new CamelCasePropertyNamesContractResolver());
+
+      _valueTuple = new ValueTuple<Guid, JsonPatchDocument<EditPositionRequest>>(_positionId, _editUserRequest);
     }
 
     [SetUp]
@@ -57,13 +64,13 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
     }
 
     [Test]
-    public void ShouldValidateWhenRequestIsCorrect()
+    public async Task ShouldValidateWhenRequestIsCorrect()
     {
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>(), It.IsAny<Guid>()))
         .ReturnsAsync(false);
 
-      _validator.TestValidate(_editUserRequest).ShouldNotHaveAnyValidationErrors();
+      Assert.AreEqual(true, (await _validator.ValidateAsync(_valueTuple)).IsValid);
     }
 
     [Test]
@@ -79,10 +86,10 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
       }, new CamelCasePropertyNamesContractResolver());
 
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>(), It.IsAny<Guid>()))
         .ReturnsAsync(false);
 
-      _validator.TestValidate(_editUserRequest).ShouldNotHaveAnyValidationErrors();
+      _validator.TestValidate(_valueTuple).ShouldNotHaveAnyValidationErrors();
     }
 
     [Test]
@@ -101,7 +108,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
           _longName)
       }, new CamelCasePropertyNamesContractResolver());
 
-      _validator.TestValidate(editUserRequest).ShouldHaveAnyValidationError();
+      _validator.TestValidate(_valueTuple).ShouldHaveAnyValidationError();
     }
 
     [Test]

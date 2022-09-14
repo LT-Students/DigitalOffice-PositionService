@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,11 +14,11 @@ using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.PositionService.Validation.Position
 {
-  public class EditPositionRequestValidator : BaseEditRequestValidator<EditPositionRequest>, IEditPositionRequestValidator
+  public class EditPositionRequestValidator : ExtendedEditRequestValidator<Guid, EditPositionRequest>, IEditPositionRequestValidator
   {
     private readonly IPositionRepository _positionRepository;
 
-    private async Task HandleInternalPropertyValidationAsync(Operation<EditPositionRequest> requestedOperation, CustomContext context)
+    private async Task HandleInternalPropertyValidationAsync(Operation<EditPositionRequest> requestedOperation, Guid positionId, CustomContext context)
     {
       RequestedOperation = requestedOperation;
       Context = context;
@@ -91,8 +92,14 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
     {
       _positionRepository = positionRepository;
 
-      RuleForEach(x => x.Operations)
-        .CustomAsync(async (operation, context, _) => await HandleInternalPropertyValidationAsync(operation, context));
+      RuleFor(x => x)
+        .CustomAsync(async (x, context, _) =>
+        {
+          foreach (var op in x.Item2.Operations)
+          {
+            await HandleInternalPropertyValidationAsync(op, x.Item1, context);
+          }
+        });
     }
   }
 }

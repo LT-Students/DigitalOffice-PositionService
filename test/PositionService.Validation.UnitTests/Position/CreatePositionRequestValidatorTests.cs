@@ -44,7 +44,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
       };
 
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>(), default))
         .ReturnsAsync(false);
 
       _validator.TestValidate(request).ShouldNotHaveAnyValidationErrors();
@@ -60,7 +60,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
       };
 
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>(), default))
         .ReturnsAsync(false);
 
       _validator.TestValidate(request).ShouldHaveAnyValidationError();
@@ -76,7 +76,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
       };
 
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>(), default))
         .ReturnsAsync(false);
 
       _validator.TestValidate(request).ShouldHaveAnyValidationError();
@@ -92,7 +92,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
       };
 
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>(), default))
         .ReturnsAsync(true);
 
       _validator.TestValidate(request).ShouldHaveAnyValidationError();

@@ -26,7 +26,7 @@ namespace LT.DigitalOffice.PositionService.Data.Interfaces
 
     Task<bool> EditAsync(DbPosition position, JsonPatchDocument<DbPosition> request);
 
-    Task<bool> DoesNameExistAsync(string name);
+    Task<bool> DoesNameExistAsync(string name, Guid? positionId = null);
 
     Task<bool> DoesExistAsync(Guid positionId);
   }

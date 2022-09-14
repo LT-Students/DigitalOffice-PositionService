@@ -113,9 +113,11 @@ namespace LT.DigitalOffice.PositionService.Data
       return true;
     }
 
-    public Task<bool> DoesNameExistAsync(string name)
+    public Task<bool> DoesNameExistAsync(string name, Guid? positionId = null)
     {
-      return _provider.Positions.AnyAsync(p => p.Name == name);
+      return positionId.HasValue
+        ? _provider.Positions.AnyAsync(p => p.Name == name && p.Id != positionId)
+        : _provider.Positions.AnyAsync(p => p.Name == name);
     }
 
     public Task<bool> DoesExistAsync(Guid positionId)

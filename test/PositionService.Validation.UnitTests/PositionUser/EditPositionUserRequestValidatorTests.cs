@@ -65,7 +65,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.PositionUser
     public void ShouldReturnErrorsWhenCheckUsersExistenceFailed()
     {
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesExistAsync(It.IsAny<Guid>()))
         .ReturnsAsync(true);
 
       _autoMocker
