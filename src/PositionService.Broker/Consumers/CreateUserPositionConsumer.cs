@@ -44,7 +44,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
       else
       {
         _logger.LogError(
-          "Cannot create userId '{UserId}' for departmentId '{DepartmentId}'",
+          "Cannot create userId '{UserId}' for positionId '{PositionId}'",
           context.Message.UserId,
           context.Message.PositionId);
       }
