@@ -19,36 +19,30 @@ namespace LT.DigitalOffice.PositionService.Mappers.Db
 
     public DbPositionUser Map(ICreateUserPositionPublish request)
     {
-      if (request is null)
-      {
-        return null;
-      }
-
-      return new DbPositionUser
-      {
-        Id = Guid.NewGuid(),
-        UserId = request.UserId,
-        PositionId = request.PositionId,
-        IsActive = true,
-        CreatedBy = request.CreatedBy
-      };
+      return request is null
+        ? null
+        : new DbPositionUser
+        {
+          Id = Guid.NewGuid(),
+          UserId = request.UserId,
+          PositionId = request.PositionId,
+          IsActive = request.IsActive,
+          CreatedBy = request.CreatedBy
+        };
     }
 
     public DbPositionUser Map(EditPositionUserRequest request)
     {
-      if (request is null || !request.PositionId.HasValue)
-      {
-        return null;
-      }
-
-      return new DbPositionUser
-      {
-        Id = Guid.NewGuid(),
-        UserId = request.UserId,
-        PositionId = request.PositionId.Value,
-        IsActive = true,
-        CreatedBy = _httpContextAccessor.HttpContext.GetUserId()
-      };
+      return request is null || !request.PositionId.HasValue
+        ? null
+        : new DbPositionUser
+        {
+          Id = Guid.NewGuid(),
+          UserId = request.UserId,
+          PositionId = request.PositionId.Value,
+          IsActive = true,
+          CreatedBy = _httpContextAccessor.HttpContext.GetUserId()
+        };
     }
   }
 }

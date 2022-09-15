@@ -155,13 +155,14 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
         CreatedBy = _creatorId,
       };
 
-      SerializerAssert.AreEqual(position.Id, await _repository.CreateAsync(position));
+      Assert.DoesNotThrowAsync(async () => await _repository.CreateAsync(position));
+      SerializerAssert.AreEqual(position, await _repository.GetAsync(position.Id));
     }
 
     [Test]
-    public async Task ShouldReturnNullForAddNullPositionAsync()
+    public void ShouldReturnNullForAddNullPositionAsync()
     {
-      SerializerAssert.AreEqual(null, await _repository.CreateAsync(null));
+      Assert.DoesNotThrowAsync(async () => await _repository.CreateAsync(null));
     }
 
     #endregion

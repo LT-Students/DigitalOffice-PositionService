@@ -12,7 +12,7 @@ namespace LT.DigitalOffice.PositionService.Data.Interfaces
   [AutoInject]
   public interface IPositionRepository
   {
-    Task<Guid?> CreateAsync(DbPosition position);
+    Task CreateAsync(DbPosition position);
 
     Task<DbPosition> GetAsync(Guid positionId);
 
@@ -26,7 +26,7 @@ namespace LT.DigitalOffice.PositionService.Data.Interfaces
 
     Task<bool> EditAsync(DbPosition position, JsonPatchDocument<DbPosition> request);
 
-    Task<bool> DoesNameExistAsync(string name);
+    Task<bool> DoesNameExistAsync(string name, Guid? positionId = null);
 
     Task<bool> DoesExistAsync(Guid positionId);
   }

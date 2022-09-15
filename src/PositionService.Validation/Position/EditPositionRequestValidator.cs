@@ -1,23 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using FluentValidation.Validators;
 using LT.DigitalOffice.Kernel.Validators;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position;
 using LT.DigitalOffice.PositionService.Validation.Position.Interfaces;
+using LT.DigitalOffice.PositionService.Validation.Position.Resources;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.PositionService.Validation.Position
 {
-  public class EditPositionRequestValidator : BaseEditRequestValidator<EditPositionRequest>, IEditPositionRequestValidator
+  public class EditPositionRequestValidator : ExtendedEditRequestValidator<Guid, EditPositionRequest>, IEditPositionRequestValidator
   {
     private readonly IPositionRepository _positionRepository;
 
-    private async Task HandleInternalPropertyValidationAsync(Operation<EditPositionRequest> requestedOperation, CustomContext context)
+    private async Task HandleInternalPropertyValidationAsync(
+      Operation<EditPositionRequest> requestedOperation,
+      Guid positionId,
+      ValidationContext<(Guid, JsonPatchDocument<EditPositionRequest>)> context)
     {
       RequestedOperation = requestedOperation;
       Context = context;
+
+      Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-RU");
 
       #region Paths
 
@@ -42,8 +51,8 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { x => !string.IsNullOrEmpty(x.value?.ToString()), "Name should not be empty." },
-          { x => x.value.ToString().Length < 81, "Max lenght of position name is 80 symbols." }
+          { x => !string.IsNullOrEmpty(x.value?.ToString()), string.Join(' ', nameof(EditPositionRequest.Name), PositionRequestValidationResource.NotNullOrEmpy) },
+          { x => x.value.ToString().Length < 81, PositionRequestValidationResource.NameLong }
         },
         CascadeMode.Stop);
 
@@ -52,7 +61,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { async x => !await _positionRepository.DoesNameExistAsync(x.value?.ToString()), "The position name already exists" }
+          { async x => !await _positionRepository.DoesNameExistAsync(x.value?.ToString(), positionId), PositionRequestValidationResource.NameExists }
         });
 
       #endregion
@@ -64,7 +73,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { x => x.value?.ToString()?.Length < 351, "Max lenght of position description is 350 symbols." }
+          { x => x.value?.ToString()?.Length < 351, PositionRequestValidationResource.DescriptionLong }
         });
 
       #endregion
@@ -76,7 +85,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { x => bool.TryParse(x.value.ToString(), out bool _), "Incorrect format of IsActive." }
+          { x => bool.TryParse(x.value.ToString(), out bool _), string.Join(' ', PositionRequestValidationResource.IncorrectType, nameof(EditPositionRequest.IsActive))}
         });
 
       #endregion
@@ -86,8 +95,14 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
     {
       _positionRepository = positionRepository;
 
-      RuleForEach(x => x.Operations)
-        .CustomAsync(async (operation, context, _) => await HandleInternalPropertyValidationAsync(operation, context));
+      RuleFor(x => x)
+        .CustomAsync(async (x, context, _) =>
+        {
+          foreach (var op in x.Item2.Operations)
+          {
+            await HandleInternalPropertyValidationAsync(op, x.Item1, context);
+          }
+        });
     }
   }
 }

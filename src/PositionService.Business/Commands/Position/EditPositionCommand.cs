@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
@@ -50,16 +50,19 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
         return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.Forbidden);
       }
 
-      if (!_validator.ValidateCustom(request, out List<string> errors))
+      ValidationResult validationResult = await _validator.ValidateAsync((positionId, request));
+      if (!validationResult.IsValid)
       {
-        return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.BadRequest, errors: errors);
+        return ResponseCreatorStatic.CreateResponse<bool>(
+          HttpStatusCode.BadRequest,
+          errors: validationResult.Errors.Select(er => er.ErrorMessage).ToList());
       }
 
       DbPosition position = await _repository.GetAsync(positionId);
 
       if (position == null)
       {
-        return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.NotFound, errors: errors);
+        return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.NotFound);
       }
 
       foreach (Operation<EditPositionRequest> item in request.Operations)
@@ -68,9 +71,9 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
           !bool.Parse(item.value.ToString()) &&
           await _repository.ContainsUsersAsync(positionId))
         {
-          errors.Add("The position contains users. Please change the position to users");
-
-          return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.Conflict, errors: errors);
+          return ResponseCreatorStatic.CreateResponse<bool>(
+            HttpStatusCode.Conflict,
+            errors: new() { "The position contains users. Please change the position to users" });
         }
       }
 

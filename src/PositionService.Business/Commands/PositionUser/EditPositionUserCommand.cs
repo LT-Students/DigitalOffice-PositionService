@@ -75,7 +75,10 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
           return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.BadRequest);
         }
 
-        result = (await _repository.CreateAsync(_mapper.Map(request))).HasValue;
+        await _repository.CreateAsync(_mapper.Map(request));
+        result = true;
+
+        await _globalCache.RemoveAsync(request.PositionId.Value);
       }
 
       return new()

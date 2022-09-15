@@ -42,37 +42,37 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.PositionUser
     }
 
     [Test]
-    public void ShouldValidateWhenRequestIsCorrect()
+    public async Task ShouldValidateWhenRequestIsCorrect()
     {
       _autoMocker
         .Setup<IPositionRepository, Task<bool>>(x => x.DoesExistAsync(It.IsAny<Guid>()))
         .ReturnsAsync(true);
 
-      _validator.TestValidate(_request).ShouldNotHaveAnyValidationErrors();
+      (await _validator.TestValidateAsync(_request)).ShouldNotHaveAnyValidationErrors();
     }
 
     [Test]
-    public void ShouldReturnErrorsWhenPositionNotExists()
+    public async Task ShouldReturnErrorsWhenPositionNotExists()
     {
       _autoMocker
         .Setup<IPositionRepository, Task<bool>>(x => x.DoesExistAsync(It.IsAny<Guid>()))
         .ReturnsAsync(false);
 
-      _validator.TestValidate(_request).ShouldHaveAnyValidationError();
+      (await _validator.TestValidateAsync(_request)).ShouldHaveValidationErrorFor(nameof(EditPositionUserRequest.PositionId));
     }
 
     [Test]
-    public void ShouldReturnErrorsWhenCheckUsersExistenceFailed()
+    public async Task ShouldReturnErrorsWhenCheckUsersExistenceFailed()
     {
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesExistAsync(It.IsAny<Guid>()))
         .ReturnsAsync(true);
 
       _autoMocker
         .Setup<IUserService, Task<List<Guid>>>(x => x.CheckUsersExistenceAsync(It.IsAny<List<Guid>>(), default))
         .ReturnsAsync(new List<Guid> { });
 
-      _validator.TestValidate(_request).ShouldHaveAnyValidationError();
+      (await _validator.TestValidateAsync(_request)).ShouldHaveValidationErrorFor(nameof(EditPositionUserRequest.UserId));
     }
   }
 }

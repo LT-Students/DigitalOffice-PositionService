@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DigitalOffice.Models.Broker.Publishing;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Provider;
 using LT.DigitalOffice.PositionService.Models.Db;
@@ -19,7 +20,7 @@ namespace LT.DigitalOffice.PositionService.Data
       _provider = provider;
     }
 
-    public async Task<Guid?> CreateAsync(DbPositionUser positionUser)
+    public Task CreateAsync(DbPositionUser positionUser)
     {
       if (positionUser is null)
       {
@@ -27,21 +28,34 @@ namespace LT.DigitalOffice.PositionService.Data
       }
 
       _provider.PositionsUsers.Add(positionUser);
-      await _provider.SaveAsync();
-
-      return positionUser.Id;
+      return _provider.SaveAsync();
     }
 
-    public async Task<DbPositionUser> GetAsync(Guid userId)
+    public async Task<Guid?> ActivateAsync(IActivateUserPublish request)
     {
-      return await _provider.PositionsUsers
+      DbPositionUser user = await _provider.PositionsUsers.FirstOrDefaultAsync(u => u.UserId == request.UserId && !u.IsActive);
+
+      if (user is null)
+      {
+        return null;
+      }
+
+      user.IsActive = true;
+      await _provider.SaveAsync();
+
+      return user.PositionId;
+    }
+
+    public Task<DbPositionUser> GetAsync(Guid userId)
+    {
+      return _provider.PositionsUsers
         .Include(u => u.Position)
         .FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
     }
 
-    public async Task<List<DbPositionUser>> GetAsync(List<Guid> userIds)
+    public Task<List<DbPositionUser>> GetAsync(List<Guid> userIds)
     {
-      return await _provider.PositionsUsers
+      return _provider.PositionsUsers
         .Include(pu => pu.Position)
         .Where(u => userIds.Contains(u.UserId) && u.IsActive)
         .ToListAsync();
@@ -52,7 +66,7 @@ namespace LT.DigitalOffice.PositionService.Data
       DbPositionUser dbPositionUser = await _provider.PositionsUsers
         .FirstOrDefaultAsync(u => u.UserId == userId);
 
-      if (dbPositionUser == null)
+      if (dbPositionUser is null)
       {
         return null;
       }
@@ -88,9 +102,9 @@ namespace LT.DigitalOffice.PositionService.Data
       return dbPositionUser.PositionId;
     }
 
-    public async Task<bool> DoesExistAsync(Guid userId)
+    public Task<bool> DoesExistAsync(Guid userId)
     {
-      return await _provider.PositionsUsers.AnyAsync(pu => pu.UserId == userId);
+      return _provider.PositionsUsers.AnyAsync(pu => pu.UserId == userId);
     }
   }
 }

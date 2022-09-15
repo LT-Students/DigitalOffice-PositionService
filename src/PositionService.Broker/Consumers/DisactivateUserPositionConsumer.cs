@@ -7,12 +7,12 @@ using MassTransit;
 
 namespace LT.DigitalOffice.PositionService.Broker.Consumers
 {
-  public class DisactivateUserConsumer : IConsumer<IDisactivateUserPublish>
+  public class DisactivateUserPositionConsumer : IConsumer<IDisactivateUserPublish>
   {
     private readonly IPositionUserRepository _positionUserRepository;
     private readonly IGlobalCacheRepository _globalCache;
 
-    public DisactivateUserConsumer(
+    public DisactivateUserPositionConsumer(
       IPositionUserRepository positionUserRepository,
       IGlobalCacheRepository globalCache)
     {

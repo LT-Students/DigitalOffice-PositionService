@@ -54,13 +54,23 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 
       if (positionFilteredData is not null)
       {
-        string key = context.Message.PositionsIds.GetRedisCacheHashCode();
+        List<Guid> elementsIds = new();
+
+        positionFilteredData.ForEach(p =>
+        {
+          elementsIds.Add(p.Id);
+
+          if (p.UsersIds is not null)
+          {
+            elementsIds.AddRange(p.UsersIds);
+          }
+        });
 
         await _globalCache.CreateAsync(
           Cache.Positions,
-          key,
+          context.Message.PositionsIds.GetRedisCacheKey(context.Message.GetBasicProperties()),
           positionFilteredData,
-          context.Message.PositionsIds,
+          elementsIds,
           TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
       }
     }
