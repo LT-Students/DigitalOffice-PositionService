@@ -54,7 +54,17 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 
       if (positions != null && positions.Any() && context.Message.UsersIds != null)
       {
-        List<Guid> elementsIds = positions.Select(p => p.Id).Concat(positions.SelectMany(x => x.UsersIds)).ToList();
+        List<Guid> elementsIds = new();
+
+        positions.ForEach(p =>
+        {
+          elementsIds.Add(p.Id);
+
+          if (p.UsersIds is not null)
+          {
+            elementsIds.AddRange(p.UsersIds);
+          }
+        });
 
         await _globalCache.CreateAsync(
           Cache.Positions,

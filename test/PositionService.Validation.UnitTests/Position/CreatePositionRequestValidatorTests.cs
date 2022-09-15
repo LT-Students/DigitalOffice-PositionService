@@ -35,7 +35,7 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
 
     [TestCase("Description")]
     [TestCase(null)]
-    public void ShouldNotReturnErrors(string description)
+    public async Task ShouldNotReturnErrors(string description)
     {
       CreatePositionRequest request = new CreatePositionRequest()
       {
@@ -44,14 +44,14 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
       };
 
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>(), null))
         .ReturnsAsync(false);
 
-      _validator.TestValidate(request).ShouldNotHaveAnyValidationErrors();
+      (await _validator.TestValidateAsync(request)).ShouldNotHaveAnyValidationErrors();
     }
 
     [Test]
-    public void ShouldReturnErrorsWhenDescriptionTooLong()
+    public async Task ShouldReturnErrorsWhenDescriptionTooLong()
     {
       CreatePositionRequest request = new CreatePositionRequest()
       {
@@ -60,14 +60,14 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
       };
 
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>(), null))
         .ReturnsAsync(false);
 
-      _validator.TestValidate(request).ShouldHaveAnyValidationError();
+      (await _validator.TestValidateAsync(request)).ShouldHaveValidationErrorFor(nameof(CreatePositionRequest.Description));
     }
 
     [Test]
-    public void ShouldReturnErrorsWhenNameTooLong()
+    public async Task ShouldReturnErrorsWhenNameTooLong()
     {
       CreatePositionRequest request = new CreatePositionRequest()
       {
@@ -76,14 +76,14 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
       };
 
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>(), null))
         .ReturnsAsync(false);
 
-      _validator.TestValidate(request).ShouldHaveAnyValidationError();
+      (await _validator.TestValidateAsync(request)).ShouldHaveValidationErrorFor(nameof(CreatePositionRequest.Name));
     }
 
     [Test]
-    public void ShouldReturnErrorsWhenPositionNotUnique()
+    public async Task ShouldReturnErrorsWhenPositionNotUnique()
     {
       CreatePositionRequest request = new CreatePositionRequest()
       {
@@ -92,10 +92,10 @@ namespace LT.DigitalOffice.PositionService.Validation.UnitTests.Position
       };
 
       _autoMocker
-        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>()))
+        .Setup<IPositionRepository, Task<bool>>(x => x.DoesNameExistAsync(It.IsAny<string>(), null))
         .ReturnsAsync(true);
 
-      _validator.TestValidate(request).ShouldHaveAnyValidationError();
+      (await _validator.TestValidateAsync(request)).ShouldHaveValidationErrorFor(nameof(CreatePositionRequest.Name));
     }
   }
 }

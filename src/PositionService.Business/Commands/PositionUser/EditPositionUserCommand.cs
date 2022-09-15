@@ -77,6 +77,8 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.PositionUser
 
         await _repository.CreateAsync(_mapper.Map(request));
         result = true;
+
+        await _globalCache.RemoveAsync(request.PositionId.Value);
       }
 
       return new()
