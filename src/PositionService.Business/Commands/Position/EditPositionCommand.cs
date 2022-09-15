@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
@@ -51,7 +50,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
         return ResponseCreatorStatic.CreateResponse<bool>(HttpStatusCode.Forbidden);
       }
 
-      var validationResult = await _validator.ValidateAsync((positionId, request));
+      ValidationResult validationResult = await _validator.ValidateAsync((positionId, request));
       if (!validationResult.IsValid)
       {
         return ResponseCreatorStatic.CreateResponse<bool>(

@@ -14,16 +14,16 @@ namespace LT.DigitalOffice.PositionService.Validation.PositionUser
       IPositionRepository positionRepository,
       IUserService userService)
     {
-      RuleFor(request => request)
-        .MustAsync(async (request, _) => 
-          (await userService.CheckUsersExistenceAsync(new List<Guid>() { request.UserId }))?.Count == 1)
+      RuleFor(request => request.UserId)
+        .MustAsync(async (userId, _) => 
+          (await userService.CheckUsersExistenceAsync(new List<Guid>() { userId }))?.Count == 1)
         .WithMessage("This user's position cannot be changed.");
 
       When(request =>
         request.PositionId.HasValue,
         () =>
-          RuleFor(request => request.PositionId.Value)
-            .MustAsync(async (id, _) => await positionRepository.DoesExistAsync(id))
+          RuleFor(request => request.PositionId)
+            .MustAsync(async (id, _) => await positionRepository.DoesExistAsync(id.Value))
             .WithMessage("Position must exist."));
     }
   }

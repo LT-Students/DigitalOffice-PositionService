@@ -4,12 +4,12 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using FluentValidation.Validators;
 using LT.DigitalOffice.Kernel.Validators;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Dto.Requests.Position;
 using LT.DigitalOffice.PositionService.Validation.Position.Interfaces;
 using LT.DigitalOffice.PositionService.Validation.Position.Resources;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.PositionService.Validation.Position
@@ -18,7 +18,10 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
   {
     private readonly IPositionRepository _positionRepository;
 
-    private async Task HandleInternalPropertyValidationAsync(Operation<EditPositionRequest> requestedOperation, Guid positionId, CustomContext context)
+    private async Task HandleInternalPropertyValidationAsync(
+      Operation<EditPositionRequest> requestedOperation,
+      Guid positionId,
+      ValidationContext<(Guid, JsonPatchDocument<EditPositionRequest>)> context)
     {
       RequestedOperation = requestedOperation;
       Context = context;
@@ -58,7 +61,7 @@ namespace LT.DigitalOffice.PositionService.Validation.Position
         x => x == OperationType.Replace,
         new()
         {
-          { async x => !await _positionRepository.DoesNameExistAsync(x.value?.ToString()), PositionRequestValidationResource.NameExists }
+          { async x => !await _positionRepository.DoesNameExistAsync(x.value?.ToString(), positionId), PositionRequestValidationResource.NameExists }
         });
 
       #endregion
