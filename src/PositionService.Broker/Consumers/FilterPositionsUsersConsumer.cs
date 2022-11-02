@@ -68,7 +68,7 @@ namespace LT.DigitalOffice.PositionService.Broker.Consumers
 
         await _globalCache.CreateAsync(
           Cache.Positions,
-          context.Message.PositionsIds.GetRedisCacheKey(context.Message.GetBasicProperties()),
+          context.Message.PositionsIds.GetRedisCacheKey(nameof(IFilterPositionsRequest), context.Message.GetBasicProperties()),
           positionFilteredData,
           elementsIds,
           TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
