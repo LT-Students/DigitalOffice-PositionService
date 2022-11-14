@@ -45,7 +45,7 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<(List<DbPosition>, int totalCount)> FindAsync(FindPositionsFilter filter)
     {
-      IQueryable<DbPosition> positionQuery = _provider.Positions;
+      IQueryable<DbPosition> positionQuery = _provider.Positions.AsNoTracking();
 
       if (!filter.IncludeDeactivated)
       {
