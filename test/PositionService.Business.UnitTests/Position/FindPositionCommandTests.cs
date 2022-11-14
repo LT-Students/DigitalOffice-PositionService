@@ -145,7 +145,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
 
       _filter = new FindPositionsFilter()
       {
-        IsActive = false,
+        IncludeDeactivated = false,
       };
 
       _mocker
@@ -167,7 +167,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     {
       _filter = new FindPositionsFilter()
       {
-        IsActive = true,
+        IncludeDeactivated = true,
         IsAscendingSort = true,
       };
 
@@ -193,7 +193,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
       List<PositionInfo> result = new List<PositionInfo>() { _positionInfo[2], _positionInfo[1], _positionInfo[0] };
       _filter = new FindPositionsFilter()
       {
-        IsActive = true,
+        IncludeDeactivated = true,
         IsAscendingSort = false,
       };
 
@@ -237,23 +237,11 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
         body: default,
         totalCount: 0,
         status: OperationResultStatusType.Failed,
-        errors: new List<string>() { "Error message" });
-
-      _mocker
-       .Setup<IBaseFindFilterValidator, bool>(x =>
-         x.Validate(It.IsAny<IValidationContext>()).IsValid)
-       .Returns(false);
-
-      _mocker
-       .Setup<IResponseCreator, FindResultResponse<PositionInfo>>(x =>
-         x.CreateFailureFindResponse<PositionInfo>(HttpStatusCode.BadRequest, It.IsAny<List<string>>()))
-       .Returns(result);
+        errors: new List<string>());
 
       SerializerAssert.AreEqual(result, await _command.ExecuteAsync(_filter));
 
-      _mocker.Verify<IResponseCreator, FindResultResponse<PositionInfo>>(
-        x => x.CreateFailureFindResponse<PositionInfo>(HttpStatusCode.BadRequest, It.IsAny<List<string>>()), Times.Once);
-      _mocker.Verify<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(It.IsAny<FindPositionsFilter>()), Times.Never);
+      _mocker.Verify<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(It.IsAny<FindPositionsFilter>()), Times.Once);
       _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(It.IsAny<DbPosition>()), Times.Never);
     }
   }
