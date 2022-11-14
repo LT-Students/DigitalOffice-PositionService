@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LT.DigitalOffice.Kernel.Responses;
+using DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
 using LT.DigitalOffice.PositionService.Data.Interfaces;
 using LT.DigitalOffice.PositionService.Mappers.Models.Interfaces;
@@ -25,7 +25,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
       _mapper = mapper;
     }
 
-    public async Task<FindResultResponse<PositionInfo>> ExecuteAsync(FindPositionsFilter filter)
+    public async Task<FindResult<PositionInfo>> ExecuteAsync(FindPositionsFilter filter)
     {
       (List<DbPosition> positions, int totalCount) = await _repository.FindAsync(filter);
 
