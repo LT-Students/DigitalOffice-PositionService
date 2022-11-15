@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
-using FluentValidation;
-using LT.DigitalOffice.Kernel.Enums;
+using DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
-using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Kernel.Validators.Interfaces;
 using LT.DigitalOffice.PositionService.Business.Commands.Position;
 using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
@@ -19,16 +16,17 @@ using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 
-namespace LT.DigitalOffice.PositionService.Business.UnitTests
+namespace LT.DigitalOffice.PositionService.Business.UnitTests.Position
 {
   public class FindPositionCommandTests
   {
+    private readonly List<Guid> _ids = new() { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+
     private AutoMocker _mocker;
     private IFindPositionsCommand _command;
     private List<PositionInfo> _positionInfo;
     private List<DbPosition> _dbPositions;
     private FindPositionsFilter _filter;
-    List<Guid> _ids = new() { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
@@ -145,7 +143,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
 
       _filter = new FindPositionsFilter()
       {
-        IsActive = false,
+        IncludeDeactivated = false,
       };
 
       _mocker
@@ -167,7 +165,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     {
       _filter = new FindPositionsFilter()
       {
-        IsActive = true,
+        IncludeDeactivated = true,
         IsAscendingSort = true,
       };
 
@@ -193,7 +191,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
       List<PositionInfo> result = new List<PositionInfo>() { _positionInfo[2], _positionInfo[1], _positionInfo[0] };
       _filter = new FindPositionsFilter()
       {
-        IsActive = true,
+        IncludeDeactivated = true,
         IsAscendingSort = false,
       };
 
@@ -217,12 +215,12 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     public async Task ShouldReturnNullAsync()
     {
       List<DbPosition> result = null;
-      List<DbPosition> dblist = null;
-      int totalCount = 0;
+      List<DbPosition> dbList = null;
+      const int totalCount = 0;
 
       _mocker
         .Setup<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(It.IsAny<FindPositionsFilter>()))
-        .ReturnsAsync((dblist, totalCount));
+        .ReturnsAsync((dblist: dbList, totalCount));
 
       SerializerAssert.AreEqual(result, (await _command.ExecuteAsync(_filter)).Body);
 
@@ -233,27 +231,13 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     [Test]
     public async Task ShouldReturnFailedResponseWhenValidationIsFailedAsync()
     {
-      FindResultResponse<PositionInfo> result = new(
+      FindResult<PositionInfo> result = new(
         body: default,
-        totalCount: 0,
-        status: OperationResultStatusType.Failed,
-        errors: new List<string>() { "Error message" });
+        totalCount: 0);
 
-      _mocker
-       .Setup<IBaseFindFilterValidator, bool>(x =>
-         x.Validate(It.IsAny<IValidationContext>()).IsValid)
-       .Returns(false);
+        SerializerAssert.AreEqual(result, await _command.ExecuteAsync(_filter));
 
-      _mocker
-       .Setup<IResponseCreator, FindResultResponse<PositionInfo>>(x =>
-         x.CreateFailureFindResponse<PositionInfo>(HttpStatusCode.BadRequest, It.IsAny<List<string>>()))
-       .Returns(result);
-
-      SerializerAssert.AreEqual(result, await _command.ExecuteAsync(_filter));
-
-      _mocker.Verify<IResponseCreator, FindResultResponse<PositionInfo>>(
-        x => x.CreateFailureFindResponse<PositionInfo>(HttpStatusCode.BadRequest, It.IsAny<List<string>>()), Times.Once);
-      _mocker.Verify<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(It.IsAny<FindPositionsFilter>()), Times.Never);
+      _mocker.Verify<IPositionRepository, Task<(List<DbPosition>, int totalCount)>>(x => x.FindAsync(It.IsAny<FindPositionsFilter>()), Times.Once);
       _mocker.Verify<IPositionInfoMapper, PositionInfo>(x => x.Map(It.IsAny<DbPosition>()), Times.Never);
     }
   }
