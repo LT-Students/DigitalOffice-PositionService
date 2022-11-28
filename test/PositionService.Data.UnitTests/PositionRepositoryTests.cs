@@ -233,7 +233,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       List<DbPosition> positions = new List<DbPosition>() { _position1, _position2, _positionWithUser };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
-        IsActive = true,
+        IncludeDeactivated = true,
         SkipCount = 0,
         TakeCount = 10,
       };
@@ -249,7 +249,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       List<DbPosition> positions = new List<DbPosition>() { _deactivatedPosition, _deactivatedPosition2 };
       FindPositionsFilter filter = new FindPositionsFilter()
       {
-        IsActive = false,
+        IncludeDeactivated = false,
         SkipCount = 0,
         TakeCount = 10,
       };
@@ -314,7 +314,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       FindPositionsFilter filter = new FindPositionsFilter()
       {
         IsAscendingSort = true,
-        IsActive = true,
+        IncludeDeactivated = true,
         SkipCount = 0,
         TakeCount = 10,
       };
@@ -347,7 +347,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       FindPositionsFilter filter = new FindPositionsFilter()
       {
         IsAscendingSort = true,
-        IsActive = false,
+        IncludeDeactivated = false,
         SkipCount = 0,
         TakeCount = 10,
       };
@@ -364,7 +364,7 @@ namespace LT.DigitalOffice.PositionService.Data.UnitTests
       FindPositionsFilter filter = new FindPositionsFilter()
       {
         IsAscendingSort = false,
-        IsActive = false,
+        IncludeDeactivated = false,
         SkipCount = 0,
         TakeCount = 10,
       };

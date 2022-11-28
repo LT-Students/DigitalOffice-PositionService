@@ -45,11 +45,11 @@ namespace LT.DigitalOffice.PositionService.Data
 
     public async Task<(List<DbPosition>, int totalCount)> FindAsync(FindPositionsFilter filter)
     {
-      IQueryable<DbPosition> positionQuery = _provider.Positions.AsQueryable();
+      IQueryable<DbPosition> positionQuery = _provider.Positions.AsNoTracking();
 
-      if (filter.IsActive.HasValue)
+      if (!filter.IncludeDeactivated)
       {
-        positionQuery = positionQuery.Where(x => x.IsActive == filter.IsActive);
+        positionQuery = positionQuery.Where(x => x.IsActive);
       }
 
       if (filter.IsAscendingSort.HasValue)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.PositionService.Business.Commands.Position.Interfaces;
 using LT.DigitalOffice.PositionService.Models.Dto.Models;
@@ -23,7 +24,7 @@ namespace LT.DigitalOffice.PositionService.Controllers
     }
 
     [HttpGet("find")]
-    public async Task<FindResultResponse<PositionInfo>> FindAsync(
+    public async Task<FindResult<PositionInfo>> FindAsync(
       [FromServices] IFindPositionsCommand command,
       [FromQuery] FindPositionsFilter filter)
     {

@@ -73,7 +73,7 @@ namespace LT.DigitalOffice.PositionService.Business.Commands.Position
         {
           return ResponseCreatorStatic.CreateResponse<bool>(
             HttpStatusCode.Conflict,
-            errors: new() { "The position contains users. Please change the position to users" });
+            errors: new() { "The position contains users. Please change the users' position." });
         }
       }
 

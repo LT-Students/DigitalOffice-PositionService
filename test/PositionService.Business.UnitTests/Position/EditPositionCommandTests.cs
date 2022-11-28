@@ -198,7 +198,7 @@ namespace LT.DigitalOffice.PositionService.Business.UnitTests
     {
       OperationResultResponse<bool> result = new(
         body: false,
-        errors: new List<string>() { "The position contains users. Please change the position to users" });
+        errors: new List<string>() { "The position contains users. Please change the users' position." });
 
       _mocker
         .Setup<IAccessValidator, Task<bool>>(x => x.HasRightsAsync(Rights.AddEditRemovePositions))
